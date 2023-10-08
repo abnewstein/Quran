@@ -4,6 +4,16 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="FileParser.fs" />
     <Compile Include="Constants.fs" />
+    <EmbeddedResource Include="data\chapters_ar_original.json" />
+    <EmbeddedResource Include="data\verses_ar_original.json" />
+    <EmbeddedResource Include="data\chapters_en_transliteration.json" />
+    <EmbeddedResource Include="data\chapters_en_sam-gerrans.json" />
+    <EmbeddedResource Include="data\verses_en_sam-gerrans.json" />
+    <EmbeddedResource Include="data\notes_en_sam-gerrans.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 </Project>
