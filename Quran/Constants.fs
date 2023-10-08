@@ -120,25 +120,52 @@ module Constants =
            5
            6 |]
 
-    let VerseCountBy chapterNumber : int =
+    let VerseCountBy chapterNumber =
         VERSE_COUNT_BY_CHAPTER.[chapterNumber - 1]
 
-    let VerseCount: int = VERSE_COUNT_BY_CHAPTER |> Array.sum
+    let VerseCount = Array.sum VERSE_COUNT_BY_CHAPTER
+    let ChapterCount = Array.length VERSE_COUNT_BY_CHAPTER
 
-    let ChapterCount: int = VERSE_COUNT_BY_CHAPTER |> Array.length
-
-    let isValidChapterNumber (chapterNumber: int) =
+    let IsValidChapterNumber chapterNumber =
         chapterNumber > 0 && chapterNumber <= ChapterCount
 
-    let isValidVerseNumber (chapterNumber: int) (verseNumber: int) =
-        isValidChapterNumber chapterNumber
+    let IsValidVerseNumber chapterNumber verseNumber =
+        IsValidChapterNumber chapterNumber
         && verseNumber > 0
         && verseNumber <= VerseCountBy chapterNumber
 
-    let isValidVerseRef (verseRefString: string) =
-        match verseRefString.Split(':') with
-        | [| chapterNumberString; verseNumberString |] ->
-            let chapterNumber = Int32.Parse(chapterNumberString)
-            let verseNumber = Int32.Parse(verseNumberString)
-            isValidVerseNumber chapterNumber verseNumber
+    let safeParseInt (str: string) =
+        match Int32.TryParse(str) with
+        | (true, value) -> Some value
+        | _ -> None
+
+    let parseTuple2 (str: string) =
+        match str.Split(':') with
+        | [| a; b |] -> (safeParseInt a, safeParseInt b)
+        | _ -> (None, None)
+
+    let parseTuple3 (str: string) =
+        match str.Split(':') with
+        | [| a; b; c |] -> (safeParseInt a, safeParseInt b, safeParseInt c)
+        | _ -> (None, None, None)
+
+    let IsValidVerseRef verseRefString =
+        let (chapOpt, verseOpt) = parseTuple2 verseRefString
+
+        match chapOpt, verseOpt with
+        | Some chap, Some verse -> IsValidVerseNumber chap verse
         | _ -> false
+
+    let TryParseVerseRef verseRefString =
+        let (chapOpt, verseOpt) = parseTuple2 verseRefString
+
+        match chapOpt, verseOpt with
+        | Some chap, Some verse when IsValidVerseNumber chap verse -> Some(chap, verse)
+        | _ -> None
+
+    let TryParseNoteRef noteRefString =
+        let (chapOpt, verseOpt, noteOpt) = parseTuple3 noteRefString
+
+        match chapOpt, verseOpt, noteOpt with
+        | Some chap, Some verse, Some note when IsValidVerseNumber chap verse -> Some(chap, verse, note)
+        | _ -> None

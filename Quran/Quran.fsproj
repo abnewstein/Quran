@@ -4,8 +4,9 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="FileParser.fs" />
     <Compile Include="Constants.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="FileParser.fs" />
     <EmbeddedResource Include="data\chapters\ar_original.json" />
     <EmbeddedResource Include="data\verses\ar_original.json" />
     <EmbeddedResource Include="data\chapters\en_transliteration.json" />
