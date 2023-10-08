@@ -3,7 +3,8 @@
 open System
 
 module Constants =
-    let ChapterVerseCountArray =
+
+    let VERSE_COUNT_BY_CHAPTER =
         [| 7
            286
            200
@@ -120,11 +121,11 @@ module Constants =
            6 |]
 
     let VerseCountBy chapterNumber : int =
-        ChapterVerseCountArray.[chapterNumber - 1]
+        VERSE_COUNT_BY_CHAPTER.[chapterNumber - 1]
 
-    let VerseCount: int = ChapterVerseCountArray |> Array.sum
+    let VerseCount: int = VERSE_COUNT_BY_CHAPTER |> Array.sum
 
-    let ChapterCount: int = ChapterVerseCountArray |> Array.length
+    let ChapterCount: int = VERSE_COUNT_BY_CHAPTER |> Array.length
 
     let isValidChapterNumber (chapterNumber: int) =
         chapterNumber > 0 && chapterNumber <= ChapterCount
