@@ -1,6 +1,8 @@
 namespace Utilities
 
 open System
+open FSharpPlus
+
 
 type Predicate<'T> = 'T -> bool
 type Predicate2<'T1, 'T2> = 'T1 -> 'T2 -> bool
@@ -28,6 +30,7 @@ module Functions =
             | Some a, Some b, Some c -> Some(a, b, c)
             | _ -> None
         | _ -> None
+
 
     let createIfValid (isValid: Predicate<'T>) create (input: 'T) =
         if isValid input then Some(create input) else None
