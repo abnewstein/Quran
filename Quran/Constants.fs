@@ -1,9 +1,6 @@
 ﻿namespace Quran
 
-open System
-
 module Constants =
-
     let VERSE_COUNT_BY_CHAPTER =
         [| 7
            286
@@ -134,38 +131,7 @@ module Constants =
         && verseNumber > 0
         && verseNumber <= VerseCountBy chapterNumber
 
-    let safeParseInt (str: string) =
-        match Int32.TryParse(str) with
-        | (true, value) -> Some value
-        | _ -> None
-
-    let parseTuple2 (str: string) =
-        match str.Split(':') with
-        | [| a; b |] -> (safeParseInt a, safeParseInt b)
-        | _ -> (None, None)
-
-    let parseTuple3 (str: string) =
-        match str.Split(':') with
-        | [| a; b; c |] -> (safeParseInt a, safeParseInt b, safeParseInt c)
-        | _ -> (None, None, None)
-
-    let IsValidVerseRef verseRefString =
-        let (chapOpt, verseOpt) = parseTuple2 verseRefString
-
-        match chapOpt, verseOpt with
-        | Some chap, Some verse -> IsValidVerseNumber chap verse
-        | _ -> false
-
-    let TryParseVerseRef verseRefString =
-        let (chapOpt, verseOpt) = parseTuple2 verseRefString
-
-        match chapOpt, verseOpt with
-        | Some chap, Some verse when IsValidVerseNumber chap verse -> Some(chap, verse)
-        | _ -> None
-
-    let TryParseNoteRef noteRefString =
-        let (chapOpt, verseOpt, noteOpt) = parseTuple3 noteRefString
-
-        match chapOpt, verseOpt, noteOpt with
-        | Some chap, Some verse, Some note when IsValidVerseNumber chap verse -> Some(chap, verse, note)
-        | _ -> None
+    let IsValidNoteNumber chapterNumber verseNumber noteNumber =
+        IsValidVerseNumber chapterNumber verseNumber
+        && noteNumber > 0
+        && noteNumber <= 50
