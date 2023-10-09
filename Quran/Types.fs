@@ -12,15 +12,9 @@ type VerseRef =
     { ChapterNumber: ChapterNumber
       VerseNumber: VerseNumber }
 
-    static member (==)(a: VerseRef, b: VerseRef) =
-        a.ChapterNumber = b.ChapterNumber && a.VerseNumber = b.VerseNumber
-
 type NoteRef =
     { VerseRef: VerseRef
       NoteNumber: NoteNumber }
-
-    static member (==)(a: NoteRef, b: NoteRef) =
-        a.VerseRef == b.VerseRef && a.NoteNumber = b.NoteNumber
 
 type Note = { Ref: NoteRef; Text: string }
 
@@ -36,39 +30,43 @@ type Chapter =
 
 type Author = Author of string
 type Language = Language of string
-
-type Translation =
-    { Author: Author
-      Language: Language }
-
-    static member (==)(a: Translation, b: Translation) =
-        a.Author = b.Author && a.Language = b.Language
+type Translation = { Author: Author; Language: Language }
 
 type Quran =
     { Translation: Translation
       Chapters: Chapter array }
 
 module VerseRef =
-    let private create (chapterNumber, verseNumber) =
+    let private create (chapterNumber, verseNumber) : VerseRef =
         { ChapterNumber = chapterNumber
           VerseNumber = verseNumber }
 
-    let fromString (s: string) : VerseRef option = parseTuple2 s |> Option.map create
+    let isValid verseRef =
+        IsValidVerseNumber verseRef.ChapterNumber verseRef.VerseNumber
 
     let Of (chapterNumber: ChapterNumber) (verseNumber: VerseNumber) : VerseRef option =
-        createIfValid2 IsValidVerseNumber create (chapterNumber, verseNumber)
+        let verseRef = create (chapterNumber, verseNumber)
+        if isValid verseRef then Some(verseRef) else None
+
+    let fromString (s: string) : VerseRef option = parseTuple2 s >>= (uncurry Of)
 
 module NoteRef =
-    let private create (chapterNumber, verseNumber, noteNumber) =
-        { VerseRef =
-            { ChapterNumber = chapterNumber
-              VerseNumber = verseNumber }
+    let private create (verseRef: VerseRef, noteNumber) =
+        { VerseRef = verseRef
           NoteNumber = noteNumber }
 
-    let fromString (s: string) : NoteRef option = parseTuple3 s |> Option.map create
+    let isValid noteRef =
+        IsValidNoteNumber noteRef.VerseRef.ChapterNumber noteRef.VerseRef.VerseNumber noteRef.NoteNumber
 
-    let Of (chapterNumber: ChapterNumber) (verseNumber: VerseNumber) (noteNumber: NoteNumber) : NoteRef option =
-        createIfValid3 IsValidNoteNumber create (chapterNumber, verseNumber, noteNumber)
+    let Of (verseRef: VerseRef) (noteNumber: NoteNumber) : NoteRef option =
+        let noteRef = create (verseRef, noteNumber)
+        if isValid noteRef then Some(noteRef) else None
+
+    let fromString (s: string) : NoteRef option =
+        parseTuple3 s
+        >>= (fun (chapterNumber, verseNumber, noteNumber) ->
+            VerseRef.Of chapterNumber verseNumber
+            >>= (fun verseRef -> Of verseRef noteNumber))
 
 module Verse =
     let private create (ref, text, notes) : Verse =

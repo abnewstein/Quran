@@ -30,19 +30,3 @@ module Functions =
             | Some a, Some b, Some c -> Some(a, b, c)
             | _ -> None
         | _ -> None
-
-
-    let createIfValid (isValid: Predicate<'T>) create (input: 'T) =
-        if isValid input then Some(create input) else None
-
-    let createIfValid2 (isValid: Predicate2<'T1, 'T2>) create (input1, input2) =
-        if isValid input1 input2 then
-            Some(create (input1, input2))
-        else
-            None
-
-    let createIfValid3 (isValid: Predicate3<'T1, 'T2, 'T3>) create (input1, input2, input3) =
-        if isValid input1 input2 input3 then
-            Some(create (input1, input2, input3))
-        else
-            None
