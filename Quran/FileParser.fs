@@ -1,5 +1,7 @@
 namespace Quran
 
+open System.IO
+open System.Reflection
 open Thoth.Json.Net
 
 type ChaptersJson = (int * string) list
@@ -40,22 +42,18 @@ module Decoder =
         | Notes decoder -> Decode.fromString decoder json |> Result.map NotesJson
 
 module FileParser =
-    open System
-    open System.IO
-    open FSharpPlus
-    open Constants
-    open Utilities.Functions
-    open Thoth.Json.Net
 
-    let PATH = "./data"
-    let CHAPTERS_JSON_PATH = $"{PATH}/chapters"
-    let VERSES_JSON_PATH = $"{PATH}/verses"
-    let NOTES_JSON_PATH = $"{PATH}/notes"
+    let assembly = Assembly.GetExecutingAssembly()
 
-    type QuranFile = { path: string; content: DataFileType }
+    let readEmbeddedResource (resourceName: string) =
+        use stream = assembly.GetManifestResourceStream(resourceName)
+        use reader = new StreamReader(stream)
+        reader.ReadToEnd()
 
-    let getFileNames (path: string) : string array =
-        Directory.GetFiles path |> Array.map Path.GetFileNameWithoutExtension
+    let getResourceNames () =
+        assembly.GetManifestResourceNames()
+        |> Array.map Path.GetFileNameWithoutExtension
+        |> Set.ofArray
 
     let parseFileName (fileName: string) : Translation option =
         fileName.Split('_')
@@ -64,5 +62,24 @@ module FileParser =
             | language :: author :: [] -> Translation.Of (Author author) (Language language) |> Option.Some
             | _ -> None
 
-    let readAllText (filePath: string) =
-        File.ReadAllText filePath |> Option.ofObj
+    let parseResourceNames (resourceNames: string Set) : Translation Set =
+        resourceNames
+        |> Set.map (fun s -> s.Split('.') |> Array.last)
+        |> Set.map parseFileName
+        |> Set.filter Option.isSome
+        |> Set.map Option.get
+
+    let getChaptersFiles (a: string Set) : string Set =
+        a |> Set.filter (fun s -> s.StartsWith("Quran.data.chapters"))
+
+    let getVersesFiles (a: string Set) : string Set =
+        a |> Set.filter (fun s -> s.StartsWith("Quran.data.verses"))
+
+    let getNotesFiles (a: string Set) : string Set =
+        a |> Set.filter (fun s -> s.StartsWith("Quran.data.notes"))
+
+    let getAvailableTranslations () =
+        getResourceNames ()
+        |> fun a -> (getChaptersFiles a, getVersesFiles a)
+        |> fun (a, b) -> parseResourceNames a, parseResourceNames b
+        |> fun (a, b) -> Set.intersect a b
