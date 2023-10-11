@@ -41,11 +41,33 @@ module Decoder =
         | Verses decoder -> Decode.fromString decoder json |> Result.map VersesJson
         | Notes decoder -> Decode.fromString decoder json |> Result.map NotesJson
 
+    let decodeVersesJson (a: Result<DataFileType, string>) : Verse list =
+        match a with
+        | Ok(VersesJson versesJson) ->
+            versesJson
+            |> List.map (fun (chapterNumber, verseNumber, text) ->
+                { Ref =
+                    { ChapterNumber = chapterNumber
+                      VerseNumber = verseNumber }
+                  Text = text
+                  Notes = [||] })
+        | _ -> []
+
+    let decodeChaptersJson (a: Result<DataFileType, string>) : Chapter list =
+        match a with
+        | Ok(ChaptersJson chaptersJson) ->
+            chaptersJson
+            |> List.map (fun (number, name) ->
+                { Number = number
+                  Name = name
+                  Verses = [||] })
+        | _ -> []
+
 module FileParser =
 
     let assembly = Assembly.GetExecutingAssembly()
 
-    let readEmbeddedResource (resourceName: string) =
+    let readEmbeddedResource resourceName =
         use stream = assembly.GetManifestResourceStream(resourceName)
         use reader = new StreamReader(stream)
         reader.ReadToEnd()
@@ -55,31 +77,38 @@ module FileParser =
         |> Array.map Path.GetFileNameWithoutExtension
         |> Set.ofArray
 
-    let parseFileName (fileName: string) : Translation option =
+    let parseFileName (fileName: string) =
         fileName.Split('_')
         |> Array.toList
         |> function
-            | language :: author :: [] -> Translation.Of (Author author) (Language language) |> Option.Some
+            | language :: author :: [] -> Some(Translation.Of (Author author) (Language language))
             | _ -> None
 
-    let parseResourceNames (resourceNames: string Set) : Translation Set =
+    let parseResourceNames (resourceNames: string Set) =
         resourceNames
         |> Set.map (fun s -> s.Split('.') |> Array.last)
         |> Set.map parseFileName
         |> Set.filter Option.isSome
         |> Set.map Option.get
 
-    let getChaptersFiles (a: string Set) : string Set =
-        a |> Set.filter (fun s -> s.StartsWith("Quran.data.chapters"))
-
-    let getVersesFiles (a: string Set) : string Set =
-        a |> Set.filter (fun s -> s.StartsWith("Quran.data.verses"))
-
-    let getNotesFiles (a: string Set) : string Set =
-        a |> Set.filter (fun s -> s.StartsWith("Quran.data.notes"))
+    let getFilesStartingWith (prefix: string) =
+        getResourceNames () |> Set.filter (fun s -> s.StartsWith(prefix))
 
     let getAvailableTranslations () =
-        getResourceNames ()
-        |> fun a -> (getChaptersFiles a, getVersesFiles a)
-        |> fun (a, b) -> parseResourceNames a, parseResourceNames b
-        |> fun (a, b) -> Set.intersect a b
+        let chaptersFiles = getFilesStartingWith "Quran.data.chapters"
+        let versesFiles = getFilesStartingWith "Quran.data.verses"
+
+        let chTrans, vsTrans =
+            parseResourceNames chaptersFiles, parseResourceNames versesFiles
+
+        Set.intersect chTrans vsTrans
+
+    let getJsonResource (kind: string) (translation: Translation) =
+        sprintf "Quran.data.%s.%A_%A.json" kind translation.Language translation.Author
+        |> readEmbeddedResource
+
+    let getChaptersJson = getJsonResource "chapters"
+    let getVersesJson = getJsonResource "verses"
+    let getNotesJson = getJsonResource "notes"
+
+// Construct Quran from verses Json

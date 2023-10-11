@@ -59,8 +59,10 @@ module NoteRef =
         IsValidNoteNumber noteRef.VerseRef.ChapterNumber noteRef.VerseRef.VerseNumber noteRef.NoteNumber
 
     let Of (verseRef: VerseRef) (noteNumber: NoteNumber) : NoteRef option =
-        let noteRef = create (verseRef, noteNumber)
-        if isValid noteRef then Some(noteRef) else None
+        create (verseRef, noteNumber)
+        |> function
+            | noteRef when isValid noteRef -> Some(noteRef)
+            | _ -> None
 
     let fromString (s: string) : NoteRef option =
         parseTuple3 s
@@ -90,15 +92,6 @@ module Chapter =
         IsValidChapterNumber number
         |> function
             | true -> Some(create (number, name, verses))
-            | false -> None
-
-module Note =
-    let private create (ref, text) = { Ref = ref; Text = text }
-
-    let Of (ref: NoteRef) (text: string) : Note option =
-        IsValidNoteNumber ref.VerseRef.ChapterNumber ref.VerseRef.VerseNumber ref.NoteNumber
-        |> function
-            | true -> Some(create (ref, text))
             | false -> None
 
 module Translation =
