@@ -1,6 +1,3 @@
-Certainly! Below is a simplified `README.md` focused solely on the F# class library (`Quran`) that you can include in your repository.
-
----
 
 # Quran
 
@@ -10,7 +7,7 @@ Certainly! Below is a simplified `README.md` focused solely on the F# class libr
 
 ## Features
 
-- Strongly-typed models for Quranic Chapters (Surahs) and Verses (Ayahs).
+- Strongly-typed models for Quranic Chapters and Verses.
 - Utility functions to validate chapter and verse numbers.
 
 ## Installation
