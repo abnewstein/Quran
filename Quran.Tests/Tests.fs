@@ -12,32 +12,30 @@ let assertNotContainsTranslation (expectedTranslation: Translation) (qurans: Qur
 let assertChapterCount (expectedCount: int) (qurans: Quran list) =
     qurans |> List.iter (fun q -> Assert.Equal(expectedCount, q.Chapters.Length))
 
+[<Theory>]
+[<InlineData(114)>]
+let ``Quran has expected chapters`` (expectedChapters: int) =
+    Assert.Equal(expectedChapters, Constants.VERSE_COUNT_BY_CHAPTER.Length)
 
-[<Fact>]
-let ``True Story`` () = Assert.True(true)
+[<Theory>]
+[<InlineData(6236)>]
+let ``Quran has expected verses`` (expectedVerses: int) =
+    Assert.Equal(expectedVerses, Constants.VERSE_COUNT_BY_CHAPTER |> Array.sum)
 
-[<Fact>]
-let ``Quran has 114 chapters`` () =
-    Assert.Equal(114, Constants.VERSE_COUNT_BY_CHAPTER.Length)
-
-[<Fact>]
-let ``Quran has 6236 verses`` () =
-    Assert.Equal(6236, Constants.VERSE_COUNT_BY_CHAPTER |> Array.sum)
-
-[<Fact>]
-let ``Should retrieve all available translations`` () =
+[<Theory>]
+[<InlineData("original", "ar")>]
+[<InlineData("sam-gerrans", "en")>]
+let ``Should retrieve all available translations`` (author: string, language: string) =
     let availableQuranData = FileParser.getAvailableQuranData ()
-    let expectedTranslation1 = Translation.Of (Author "original") (Language "ar")
-    let expectedTranslation2 = Translation.Of (Author "sam-gerrans") (Language "en")
+    let expectedTranslation = Translation.Of (Author author) (Language language)
 
-    assertContainsTranslation expectedTranslation1 availableQuranData
-    assertContainsTranslation expectedTranslation2 availableQuranData
+    assertContainsTranslation expectedTranslation availableQuranData
 
-[<Fact>]
-let ``Should not retrieve unavailable translations`` () =
+[<Theory>]
+[<InlineData("transliteration", "en")>]
+let ``Should not retrieve unavailable translations`` (author: string, language: string) =
     let availableQuranData = FileParser.getAvailableQuranData ()
-
-    let expectedTranslation = Translation.Of (Author "transliteration") (Language "en")
+    let expectedTranslation = Translation.Of (Author author) (Language language)
 
     assertNotContainsTranslation expectedTranslation availableQuranData
 
@@ -47,7 +45,7 @@ let ``All Quran translations should have 114 chapters`` () =
     assertChapterCount Constants.ChapterCount availableQuranData
 
 [<Fact>]
-let ``Each Quran should have the expected number of verses per chapter`` () =
+let ``Each Quran object should have the expected number of verses per chapter`` () =
     let availableQuranData = FileParser.getAvailableQuranData ()
 
     availableQuranData
@@ -58,7 +56,7 @@ let ``Each Quran should have the expected number of verses per chapter`` () =
             Assert.Equal(expectedVerseCount, chapter.Verses.Length)))
 
 [<Fact>]
-let ``Each Quran should have the expected total number of verses`` () =
+let ``Each Quran object should have the expected total number of verses`` () =
     let availableQuranData = FileParser.getAvailableQuranData ()
 
     availableQuranData
