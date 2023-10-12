@@ -28,9 +28,25 @@ type Chapter =
       Name: string
       Verses: Verse array }
 
-type Author = Author of string
-type Language = Language of string
-type Translation = { Author: Author; Language: Language }
+type Author =
+    | Author of string
+
+    override this.ToString() =
+        match this with
+        | Author name -> name
+
+type Language =
+    | Language of string
+
+    override this.ToString() =
+        match this with
+        | Language name -> name
+
+type Translation =
+    { Author: Author
+      Language: Language }
+
+    override this.ToString() = $"{this.Language}_{this.Author}"
 
 type Quran =
     { Translation: Translation

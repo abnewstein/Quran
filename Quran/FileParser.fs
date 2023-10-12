@@ -13,10 +13,7 @@ type DataFileType =
     | VersesJson of VersesJson
     | NotesJson of NotesJson
 
-type DecoderType =
-    | Chapters of Decoder<ChaptersJson>
-    | Verses of Decoder<VersesJson>
-    | Notes of Decoder<NotesJson>
+type DecoderType<'T> = Decoder<'T>
 
 module Decoder =
 
@@ -26,48 +23,41 @@ module Decoder =
     let decodeInt = Decode.int
     let decodeString = Decode.string
 
-    let ChaptersDecoder: DecoderType =
-        (decodeTuple2 decodeInt decodeString) |> decodeList |> Chapters
+    let decodeChapters: DecoderType<ChaptersJson> =
+        (decodeTuple2 decodeInt decodeString) |> decodeList
 
-    let VersesDecoder: DecoderType =
-        (decodeTuple3 decodeInt decodeInt decodeString) |> decodeList |> Verses
+    let decodeVerses: DecoderType<VersesJson> =
+        (decodeTuple3 decodeInt decodeInt decodeString) |> decodeList
 
-    let NotesDecoder: DecoderType =
-        (decodeTuple3 decodeString decodeInt decodeString) |> decodeList |> Notes
+    let decodeNotes: DecoderType<NotesJson> =
+        (decodeTuple3 decodeString decodeInt decodeString) |> decodeList
 
-    let decode (decoder: DecoderType) (json: string) =
-        match decoder with
-        | Chapters decoder -> Decode.fromString decoder json |> Result.map ChaptersJson
-        | Verses decoder -> Decode.fromString decoder json |> Result.map VersesJson
-        | Notes decoder -> Decode.fromString decoder json |> Result.map NotesJson
+    let constructVerses (versesJson: VersesJson) : Verse array =
+        versesJson
+        |> List.map (fun (chapterNumber, verseNumber, text) ->
+            match VerseRef.Of chapterNumber verseNumber with
+            | Some ref -> Verse.Of ref text [||]
+            | None -> None)
+        |> List.choose id // Remove None and unpack Some
+        |> Array.ofList
 
-    let decodeVersesJson (a: Result<DataFileType, string>) : Verse list =
-        match a with
-        | Ok(VersesJson versesJson) ->
-            versesJson
-            |> List.map (fun (chapterNumber, verseNumber, text) ->
-                { Ref =
-                    { ChapterNumber = chapterNumber
-                      VerseNumber = verseNumber }
-                  Text = text
-                  Notes = [||] })
-        | _ -> []
+    let constructChapters (chaptersJson: ChaptersJson) (verses: Verse array) : Chapter array =
+        chaptersJson
+        |> List.map (fun (chapterNumber, name) ->
+            match verses |> Array.filter (fun v -> v.Ref.ChapterNumber = chapterNumber) with
+            | verses when verses.Length > 0 -> Chapter.Of chapterNumber name verses
+            | _ -> None)
+        |> List.choose id // Remove None and unpack Some
+        |> Array.ofList
 
-    let decodeChaptersJson (a: Result<DataFileType, string>) : Chapter list =
-        match a with
-        | Ok(ChaptersJson chaptersJson) ->
-            chaptersJson
-            |> List.map (fun (number, name) ->
-                { Number = number
-                  Name = name
-                  Verses = [||] })
-        | _ -> []
+    let constructQuran (chapters: Chapter array) (translation: Translation) : Quran = Quran.Of translation chapters
 
 module FileParser =
 
     let assembly = Assembly.GetExecutingAssembly()
 
     let readEmbeddedResource resourceName =
+        printfn "Reading embedded resource: %s" resourceName
         use stream = assembly.GetManifestResourceStream(resourceName)
         use reader = new StreamReader(stream)
         reader.ReadToEnd()
@@ -104,11 +94,29 @@ module FileParser =
         Set.intersect chTrans vsTrans
 
     let getJsonResource (kind: string) (translation: Translation) =
-        sprintf "Quran.data.%s.%A_%A.json" kind translation.Language translation.Author
+        sprintf "Quran.data.%s.%s.json" kind (string translation)
         |> readEmbeddedResource
 
     let getChaptersJson = getJsonResource "chapters"
     let getVersesJson = getJsonResource "verses"
     let getNotesJson = getJsonResource "notes"
 
-// Construct Quran from verses Json
+    // Construct Quran from verses Json
+    let constructQuranObj (chaptersJsonStr: string) (versesJsonStr: string) (translation: Translation) : Quran =
+        let chapters = chaptersJsonStr |> Decode.fromString Decoder.decodeChapters
+        let verses = versesJsonStr |> Decode.fromString Decoder.decodeVerses
+
+        match chapters, verses with
+        | Ok chapters, Ok verses ->
+            Decoder.constructVerses verses
+            |> Decoder.constructChapters chapters
+            |> Decoder.constructQuran
+            <| translation
+        | _ -> failwith "Failed to parse chapters or verses, check the json files"
+
+    let constructQuranFromJson (translation: Translation) : Quran =
+        (getChaptersJson translation, getVersesJson translation) ||> constructQuranObj
+        <| translation
+
+    let getAvailableQuranData () : Quran list =
+        getAvailableTranslations () |> Set.map constructQuranFromJson |> Set.toList
