@@ -7,6 +7,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quran", "Quran\Quran.fsproj
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quran.Tests", "Quran.Tests\Quran.Tests.fsproj", "{2C1F22CD-95D2-4E10-9198-C8A01D0A4C51}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Quran.SPA", "Quran.SPA\Quran.SPA.fsproj", "{A5EA4B1E-81D5-4368-8BAE-07B6259B6281}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{2C1F22CD-95D2-4E10-9198-C8A01D0A4C51}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2C1F22CD-95D2-4E10-9198-C8A01D0A4C51}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2C1F22CD-95D2-4E10-9198-C8A01D0A4C51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5EA4B1E-81D5-4368-8BAE-07B6259B6281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5EA4B1E-81D5-4368-8BAE-07B6259B6281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5EA4B1E-81D5-4368-8BAE-07B6259B6281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5EA4B1E-81D5-4368-8BAE-07B6259B6281}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
