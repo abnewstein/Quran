@@ -8,13 +8,6 @@ type ChaptersJson = (int * string) list
 type VersesJson = (int * int * string) list
 type NotesJson = (string * int * string) list
 
-type DataFileType =
-    | ChaptersJson of ChaptersJson
-    | VersesJson of VersesJson
-    | NotesJson of NotesJson
-
-type DecoderType<'T> = Decoder<'T>
-
 module Decoder =
 
     let decodeList = Decode.list
@@ -23,13 +16,13 @@ module Decoder =
     let decodeInt = Decode.int
     let decodeString = Decode.string
 
-    let decodeChapters: DecoderType<ChaptersJson> =
+    let decodeChapters: Decoder<ChaptersJson> =
         (decodeTuple2 decodeInt decodeString) |> decodeList
 
-    let decodeVerses: DecoderType<VersesJson> =
+    let decodeVerses: Decoder<VersesJson> =
         (decodeTuple3 decodeInt decodeInt decodeString) |> decodeList
 
-    let decodeNotes: DecoderType<NotesJson> =
+    let decodeNotes: Decoder<NotesJson> =
         (decodeTuple3 decodeString decodeInt decodeString) |> decodeList
 
     let constructVerses (versesJson: VersesJson) : Verse array =
@@ -117,5 +110,5 @@ module FileParser =
         (getChaptersJson translation, getVersesJson translation) ||> constructQuranObj
         <| translation
 
-    let getAvailableQuranData () : Quran list =
-        getAvailableTranslations () |> Set.map constructQuranFromJson |> Set.toList
+    let getAvailableQuranData () : Quran array =
+        getAvailableTranslations () |> Set.map constructQuranFromJson |> Set.toArray

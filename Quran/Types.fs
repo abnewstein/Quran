@@ -2,6 +2,7 @@ namespace Quran
 
 open FSharpPlus
 open Constants
+open Utilities.TextSearch
 open Utilities.Functions
 
 type ChapterNumber = int
@@ -112,3 +113,38 @@ module Quran =
     let Of (translation: Translation) (chapters: Chapter array) : Quran =
         { Translation = translation
           Chapters = chapters }
+
+    /// <summary>Fetches a chapter by its number.</summary>
+    let getChapter (quran: Quran) (chapterNumber: ChapterNumber) : Chapter option =
+        quran.Chapters |> Array.tryFind (fun c -> c.Number = chapterNumber)
+
+    /// <summary>Fetches a verse given its reference.</summary>
+    let getVerse (quran: Quran) (verseRef: VerseRef) : Verse option =
+        getChapter quran verseRef.ChapterNumber
+        |> Option.bind (fun c -> c.Verses |> Array.tryFind (fun v -> v.Ref.VerseNumber = verseRef.VerseNumber))
+
+    /// <summary>Fetches all verses for a given chapter number.</summary>
+    let getChapterVerses (quran: Quran) (chapterNumber: ChapterNumber) : Verse array option =
+        getChapter quran chapterNumber |> Option.map (fun c -> c.Verses)
+
+    /// <summary>Fetches a note given its reference.</summary>
+    let getNote (quran: Quran) (noteRef: NoteRef) : Note option =
+        getVerse quran noteRef.VerseRef
+        |> Option.bind (fun v -> v.Notes |> Array.tryFind (fun n -> n.Ref.NoteNumber = noteRef.NoteNumber))
+
+    let filterVersesByTextWithScore (quran: Quran) (query: string) : (Verse * float) array =
+        quran.Chapters
+        |> Array.collect (fun c -> c.Verses)
+        |> Array.map (fun v -> (v, calculateMatchingScore (query.ToLower()) (v.Text.ToLower())))
+        |> Array.filter (snd >> ((<) 0.0))
+
+    /// <summary>Finds and scores verses based on text matching.</summary>
+    let filterVersesByText (quran: Quran) (text: string) : (Verse * float) array =
+        filterVersesByTextWithScore quran text
+
+    /// <summary>Fetches the count of chapters.</summary>
+    let getChapterCount (quran: Quran) : int = Array.length quran.Chapters
+
+    /// <summary>Fetches the total count of verses.</summary>
+    let getVerseCount (quran: Quran) : int =
+        quran.Chapters |> Array.sumBy (fun c -> Array.length c.Verses)

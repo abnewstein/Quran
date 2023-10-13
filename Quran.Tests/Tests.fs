@@ -3,14 +3,14 @@ module Tests
 open Xunit
 open Quran
 
-let assertContainsTranslation (expectedTranslation: Translation) (qurans: Quran list) =
-    Assert.True(List.exists (fun q -> q.Translation = expectedTranslation) qurans)
+let assertContainsTranslation (expectedTranslation: Translation) (qurans: Quran array) =
+    Assert.True(Array.exists (fun q -> q.Translation = expectedTranslation) qurans)
 
-let assertNotContainsTranslation (expectedTranslation: Translation) (qurans: Quran list) =
-    Assert.False(List.exists (fun q -> q.Translation = expectedTranslation) qurans)
+let assertNotContainsTranslation (expectedTranslation: Translation) (qurans: Quran array) =
+    Assert.False(Array.exists (fun q -> q.Translation = expectedTranslation) qurans)
 
-let assertChapterCount (expectedCount: int) (qurans: Quran list) =
-    qurans |> List.iter (fun q -> Assert.Equal(expectedCount, q.Chapters.Length))
+let assertChapterCount (expectedCount: int) (qurans: Quran array) =
+    qurans |> Array.iter (fun q -> Assert.Equal(expectedCount, q.Chapters.Length))
 
 [<Theory>]
 [<InlineData(114)>]
@@ -49,7 +49,7 @@ let ``Each Quran object should have the expected number of verses per chapter`` 
     let availableQuranData = FileParser.getAvailableQuranData ()
 
     availableQuranData
-    |> List.iter (fun quran ->
+    |> Array.iter (fun quran ->
         quran.Chapters
         |> Array.iteri (fun i chapter ->
             let expectedVerseCount = Constants.VerseCountBy(i + 1)
@@ -60,6 +60,6 @@ let ``Each Quran object should have the expected total number of verses`` () =
     let availableQuranData = FileParser.getAvailableQuranData ()
 
     availableQuranData
-    |> List.iter (fun quran ->
+    |> Array.iter (fun quran ->
         let totalVerseCount = quran.Chapters |> Array.sumBy (fun ch -> ch.Verses.Length)
         Assert.Equal(Constants.VerseCount, totalVerseCount))

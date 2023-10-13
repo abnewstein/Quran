@@ -30,3 +30,19 @@ module Functions =
             | Some a, Some b, Some c -> Some(a, b, c)
             | _ -> None
         | _ -> None
+
+module TextSearch =
+
+    /// <summary>Calculates the matching score for a text against a query.</summary>
+    let calculateMatchingScore (query: string) (text: string) : float =
+        let queryWords =
+            query.Split([| ' '; ','; '.'; '?' |], System.StringSplitOptions.RemoveEmptyEntries)
+
+        let textWords =
+            text.Split([| ' '; ','; '.'; '?' |], System.StringSplitOptions.RemoveEmptyEntries)
+
+        let matchingWords =
+            queryWords
+            |> Array.filter (fun q -> textWords |> Array.exists (fun t -> t.Contains q))
+
+        float matchingWords.Length / float textWords.Length
