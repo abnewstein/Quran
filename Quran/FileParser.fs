@@ -94,8 +94,7 @@ module FileParser =
         Set.intersect chTrans vsTrans
 
     let getJsonResource (kind: string) (translation: Translation) =
-        sprintf "Quran.data.%s.%s.json" kind (string translation)
-        |> readEmbeddedResource
+        readEmbeddedResource $"Quran.data.{kind}.{translation}.json"
 
     let getChaptersJson = getJsonResource "chapters"
     let getVersesJson = getJsonResource "verses"
