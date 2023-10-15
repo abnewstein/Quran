@@ -57,31 +57,32 @@ module VerseRef =
     let isValid verseRef =
         IsValidVerseNumber verseRef.ChapterNumber verseRef.VerseNumber
 
-    let Of (chapterNumber: ChapterNumber) (verseNumber: VerseNumber) : VerseRef option =
+    let Of (chapterNumber: int, verseNumber: int) : VerseRef option =
         let verseRef =
             { ChapterNumber = chapterNumber
               VerseNumber = verseNumber }
 
         if isValid verseRef then Some(verseRef) else None
 
-    let fromString (s: string) : VerseRef option = parseTuple2 s >>= (uncurry Of)
+    let fromString (s: string) : VerseRef option = Option.bind Of (parseTuple2 s)
 
 module NoteRef =
     let isValid noteRef =
         IsValidNoteNumber noteRef.VerseRef.ChapterNumber noteRef.VerseRef.VerseNumber noteRef.NoteNumber
 
-    let Of (verseRef: VerseRef) (noteNumber: NoteNumber) : NoteRef option =
-        { VerseRef = verseRef
-          NoteNumber = noteNumber }
+    let Of (chapterNumber:int, verseNumber: int, noteNumber: int) : NoteRef option =
+        VerseRef.Of (chapterNumber, verseNumber)
         |> function
-            | noteRef when isValid noteRef -> Some(noteRef)
-            | _ -> None
+            | Some verseRef ->
+                let noteRef =
+                    { VerseRef = verseRef
+                      NoteNumber = noteNumber }
+
+                if isValid noteRef then Some(noteRef) else None
+            | None -> None
 
     let fromString (s: string) : NoteRef option =
-        parseTuple3 s
-        >>= (fun (chapterNumber, verseNumber, noteNumber) ->
-            VerseRef.Of chapterNumber verseNumber
-            >>= (fun verseRef -> Of verseRef noteNumber))
+        Option.bind Of (parseTuple3 s)
 
 module Verse =
     let Of (ref: VerseRef) (text: string) (notes: Note array) : Verse option =
@@ -115,31 +116,32 @@ module Quran =
           Chapters = chapters }
 
     /// <summary>Fetches a chapter by its number.</summary>
-    let getChapter (quran: Quran) (chapterNumber: ChapterNumber) : Chapter option =
-        quran.Chapters |> Array.tryFind (fun c -> c.Number = chapterNumber)
+    let getChapter (quran: Quran) (chapterNumber: ChapterNumber) : Chapter =
+        quran.Chapters[chapterNumber - 1]
 
     /// <summary>Fetches a verse given its reference.</summary>
-    let getVerse (quran: Quran) (verseRef: VerseRef) : Verse option =
+    let getVerse (quran: Quran) (verseRef: VerseRef) : Verse =
         getChapter quran verseRef.ChapterNumber
-        |> Option.bind (fun c -> c.Verses |> Array.tryFind (fun v -> v.Ref.VerseNumber = verseRef.VerseNumber))
+        |> (fun c -> c.Verses.[verseRef.VerseNumber - 1])
 
     /// <summary>Fetches all verses for a given chapter number.</summary>
-    let getChapterVerses (quran: Quran) (chapterNumber: ChapterNumber) : Verse array option =
-        getChapter quran chapterNumber |> Option.map (fun c -> c.Verses)
+    let getChapterVerses (quran: Quran) (chapterNumber: ChapterNumber) : array<Verse> =
+        getChapter quran chapterNumber
+        |> (fun c -> c.Verses)
 
     /// <summary>Fetches a note given its reference.</summary>
-    let getNote (quran: Quran) (noteRef: NoteRef) : Note option =
+    let getNote (quran: Quran) (noteRef: NoteRef) : Note =
         getVerse quran noteRef.VerseRef
-        |> Option.bind (fun v -> v.Notes |> Array.tryFind (fun n -> n.Ref.NoteNumber = noteRef.NoteNumber))
+        |> (fun v -> v.Notes.[noteRef.NoteNumber - 1])
 
-    let filterVersesByTextWithScore (quran: Quran) (query: string) : (Verse * float) array =
+    let filterVersesByTextWithScore (quran: Quran) (query: string) : array<Verse * float> =
         quran.Chapters
         |> Array.collect (fun c -> c.Verses)
         |> Array.map (fun v -> (v, calculateMatchingScore (query.ToLower()) (v.Text.ToLower())))
         |> Array.filter (snd >> ((<) 0.0))
 
     /// <summary>Finds and scores verses based on text matching.</summary>
-    let filterVersesByText (quran: Quran) (text: string) : (Verse * float) array =
+    let filterVersesByText (quran: Quran) (text: string) : array<Verse * float> =
         filterVersesByTextWithScore quran text
 
     /// <summary>Fetches the count of chapters.</summary>

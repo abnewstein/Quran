@@ -11,11 +11,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FSharpPlus" Version="1.4.1" />
     <PackageReference Include="WebSharper" Version="6.1.5.317" />    
     <PackageReference Include="WebSharper.FSharp" Version="6.1.5.317" />
     <PackageReference Include="WebSharper.MathJS" Version="6.1.5.317" />
     <PackageReference Include="WebSharper.UI" Version="6.1.4.317" />
     <PackageReference Include="WebSharper.AspNetCore" Version="6.1.5.317" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Quran\Quran.fsproj" />
   </ItemGroup>
 
 </Project>
