@@ -3,7 +3,7 @@ module Tests2
 open Xunit
 open Quran
 
-let quranData: Quran array = FileParser.getAvailableQuranData ()
+let quranData: Quran array = Service.getAvailableQuranData ()
 
 [<Fact>]
 let ``Test - filterVersesByTextWithScore should return verses with non-zero scores`` () =

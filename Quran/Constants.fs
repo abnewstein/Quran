@@ -1,5 +1,8 @@
 ﻿namespace Quran
 
+open WebSharper
+
+[<JavaScript>]
 module Constants =
     let VERSE_COUNT_BY_CHAPTER =
         [| 7

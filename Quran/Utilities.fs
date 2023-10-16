@@ -2,12 +2,17 @@ namespace Utilities
 
 open System
 open FSharpPlus
+open WebSharper
 
 
+[<JavaScript>]
 type Predicate<'T> = 'T -> bool
+[<JavaScript>]
 type Predicate2<'T1, 'T2> = 'T1 -> 'T2 -> bool
+[<JavaScript>]
 type Predicate3<'T1, 'T2, 'T3> = 'T1 -> 'T2 -> 'T3 -> bool
 
+[<JavaScript>]
 module Functions =
 
     let safeParseInt (str: string) =
@@ -31,6 +36,7 @@ module Functions =
             | _ -> None
         | _ -> None
 
+[<JavaScript>]
 module TextSearch =
 
     /// <summary>Calculates the matching score for a text against a query.</summary>

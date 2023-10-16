@@ -5,7 +5,7 @@ module Program =
 
     // NoteRef.fromString "1:1:1" |> printfn "%A"
     // FileParser.getAvailableTranslations () |> printfn "%A"
-    let quranData: Quran array = FileParser.getAvailableQuranData ()
+    let quranData: Quran array = Service.getAvailableQuranData ()
 
     let searchResult = Quran.filterVersesByTextWithScore quranData[1] "not equal"
 

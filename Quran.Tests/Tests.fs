@@ -26,7 +26,7 @@ let ``Quran has expected verses`` (expectedVerses: int) =
 [<InlineData("original", "ar")>]
 [<InlineData("sam-gerrans", "en")>]
 let ``Should retrieve all available translations`` (author: string, language: string) =
-    let availableQuranData = FileParser.getAvailableQuranData ()
+    let availableQuranData = Service.getAvailableQuranData ()
     let expectedTranslation = Translation.Of (Author author) (Language language)
 
     assertContainsTranslation expectedTranslation availableQuranData
@@ -34,19 +34,19 @@ let ``Should retrieve all available translations`` (author: string, language: st
 [<Theory>]
 [<InlineData("transliteration", "en")>]
 let ``Should not retrieve unavailable translations`` (author: string, language: string) =
-    let availableQuranData = FileParser.getAvailableQuranData ()
+    let availableQuranData = Service.getAvailableQuranData ()
     let expectedTranslation = Translation.Of (Author author) (Language language)
 
     assertNotContainsTranslation expectedTranslation availableQuranData
 
 [<Fact>]
 let ``All Quran translations should have 114 chapters`` () =
-    let availableQuranData = FileParser.getAvailableQuranData ()
+    let availableQuranData = Service.getAvailableQuranData ()
     assertChapterCount Constants.ChapterCount availableQuranData
 
 [<Fact>]
 let ``Each Quran object should have the expected number of verses per chapter`` () =
-    let availableQuranData = FileParser.getAvailableQuranData ()
+    let availableQuranData = Service.getAvailableQuranData ()
 
     availableQuranData
     |> Array.iter (fun quran ->
@@ -57,7 +57,7 @@ let ``Each Quran object should have the expected number of verses per chapter`` 
 
 [<Fact>]
 let ``Each Quran object should have the expected total number of verses`` () =
-    let availableQuranData = FileParser.getAvailableQuranData ()
+    let availableQuranData = Service.getAvailableQuranData ()
 
     availableQuranData
     |> Array.iter (fun quran ->

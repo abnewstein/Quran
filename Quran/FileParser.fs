@@ -9,7 +9,6 @@ type VersesJson = list<int * int * string>
 type NotesJson = list<string * int * string>
 
 module Decoder =
-
     let decodeList = Decode.list
     let decodeTuple2 = Decode.tuple2
     let decodeTuple3 = Decode.tuple3
@@ -54,9 +53,7 @@ module Decoder =
             |> Quran.Of translation
         | _ -> failwith "Failed to parse chapters or verses, check the json files"
 
-
 module FileParser =
-
     let assembly = Assembly.GetExecutingAssembly()
 
     let readEmbeddedResource resourceName =
@@ -108,5 +105,3 @@ module FileParser =
 
         Decoder.constructQuran chaptersJsonStr versesJsonStr translation
         
-    let getAvailableQuranData () : array<Quran> =
-        getAvailableTranslations () |> Set.map constructQuranFromJson |> Set.toArray
