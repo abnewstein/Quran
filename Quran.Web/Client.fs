@@ -15,17 +15,6 @@ module Templates =
 module Client =
 
     let Main () =
-        let quran: Var<array<Quran>> = Var.Create [||]
 
-        printfn "%A" quran
-
-        Templates.MainTemplate.MainForm()
-            .OnSend(fun e ->
-                async {
-                    let! res = Server.getQuranData ()
-                    printfn "%A" res
-                    quran := res
-                }
-                |> Async.StartImmediate
-            )            
+        Templates.MainTemplate()
             .Doc()
