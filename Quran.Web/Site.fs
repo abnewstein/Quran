@@ -12,38 +12,27 @@ type EndPoint =
 module Templating =
     open WebSharper.UI.Html
 
-    // Compute a menubar where the menu item for the given endpoint is active
-    let MenuBar (ctx: Context<EndPoint>) endpoint : Doc list =
-        let ( => ) txt act =
-            let isActive = if endpoint = act then "nav-link active" else "nav-link"
-            li [attr.``class`` "nav-item"] [
-                a [
-                    attr.``class`` isActive
-                    attr.href (ctx.Link act)
-                ] [text txt]
-            ]
-        [
-            "Home" => EndPoint.Home
-            "About" => EndPoint.About
-        ]
-
     let Main ctx action (title: string) (body: Doc list) =
         Content.Page(
             Templates.MainTemplate()
                 .Title(title)
-                .MenuBar(MenuBar ctx action)
                 .Body(body)
                 .Doc()
         )
 
 module Site =
     open WebSharper.UI.Html
-
     open type WebSharper.UI.ClientServer
+    open Quran
+
+    let quranData = Service.getAvailableQuranData ()
+    let englishQuran = quranData |> Array.find (fun q -> q.Translation.Language = Language "en")
+
+    let firstVerse = englishQuran.Chapters.[0].Verses.[0]
 
     let HomePage ctx =
         Templating.Main ctx EndPoint.Home "Home" [
-            h1 [] [text "Say Hi to the server!"]
+            h1 [] [text firstVerse.Text]
             div [] [client (Client.Main())]
         ]
 
