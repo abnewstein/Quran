@@ -26,13 +26,13 @@ jobs:
         run: dotnet build Quran.Web --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish Quran.Web -c Release -o ${{env.DOTNET_ROOT}}/published
+        run: dotnet publish Quran.Web -c Release -o ${{env.DOTNET_ROOT}}\published
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/Quran.Web
+          path: ${{env.DOTNET_ROOT}}\published
 
   deploy:
     runs-on: windows-latest
@@ -46,7 +46,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/Quran.Web
+          path: ${{env.DOTNET_ROOT}}\published
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
