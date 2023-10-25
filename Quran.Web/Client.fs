@@ -9,14 +9,13 @@ open Quran
 [<JavaScript>]
 module Templates =
 
-    type MainTemplate = Templating.Template<"wwwroot/Main.html", ClientLoad.FromDocument, ServerLoad.WhenChanged>
+    type MainTemplate = Templating.Template<"components/Main.html", ClientLoad.FromDocument, ServerLoad.WhenChanged>
 
 [<JavaScript>]
 module Client =
-    open WebSharper.JavaScript
-    open WebSharper.UI.Html
-
-    let Main () =
+    open WebSharper.UI.Html    
+    
+    let Main () =        
         Templates.MainTemplate()
             .Body([text "Hello World!"])
             .Doc()

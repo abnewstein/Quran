@@ -8,3 +8,6 @@ module Service =
     [<Rpc>]
     let getAvailableQuranData () : array<Quran> =
         getAvailableTranslations () |> Set.map constructQuranFromJson |> Set.toArray
+    
+    [<Rpc>]
+    let QuranData = getAvailableQuranData ()

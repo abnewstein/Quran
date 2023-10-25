@@ -8,8 +8,10 @@ open Utilities.Functions
 
 [<JavaScript>]
 type ChapterNumber = int
+
 [<JavaScript>]
 type VerseNumber = int
+
 [<JavaScript>]
 type NoteNumber = int
 
@@ -85,8 +87,8 @@ module NoteRef =
     let isValid noteRef =
         IsValidNoteNumber noteRef.VerseRef.ChapterNumber noteRef.VerseRef.VerseNumber noteRef.NoteNumber
 
-    let Of (chapterNumber:int, verseNumber: int, noteNumber: int) : NoteRef option =
-        VerseRef.Of (chapterNumber, verseNumber)
+    let Of (chapterNumber: int, verseNumber: int, noteNumber: int) : NoteRef option =
+        VerseRef.Of(chapterNumber, verseNumber)
         |> function
             | Some verseRef ->
                 let noteRef =
@@ -96,8 +98,7 @@ module NoteRef =
                 if isValid noteRef then Some(noteRef) else None
             | None -> None
 
-    let fromString (s: string) : NoteRef option =
-        Option.bind Of (parseTuple3 s)
+    let fromString (s: string) : NoteRef option = Option.bind Of (parseTuple3 s)
 
 [<JavaScript>]
 module Verse =
@@ -135,8 +136,7 @@ module Quran =
           Chapters = chapters }
 
     /// <summary>Fetches a chapter by its number.</summary>
-    let getChapter (quran: Quran) (chapterNumber: ChapterNumber) : Chapter =
-        quran.Chapters[chapterNumber - 1]
+    let getChapter (quran: Quran) (chapterNumber: ChapterNumber) : Chapter = quran.Chapters[chapterNumber - 1]
 
     /// <summary>Fetches a verse given its reference.</summary>
     let getVerse (quran: Quran) (verseRef: VerseRef) : Verse =
@@ -145,13 +145,11 @@ module Quran =
 
     /// <summary>Fetches all verses for a given chapter number.</summary>
     let getChapterVerses (quran: Quran) (chapterNumber: ChapterNumber) : array<Verse> =
-        getChapter quran chapterNumber
-        |> (fun c -> c.Verses)
+        getChapter quran chapterNumber |> (fun c -> c.Verses)
 
     /// <summary>Fetches a note given its reference.</summary>
     let getNote (quran: Quran) (noteRef: NoteRef) : Note =
-        getVerse quran noteRef.VerseRef
-        |> (fun v -> v.Notes.[noteRef.NoteNumber - 1])
+        getVerse quran noteRef.VerseRef |> (fun v -> v.Notes.[noteRef.NoteNumber - 1])
 
     let filterVersesByTextWithScore (quran: Quran) (query: string) : array<Verse * float> =
         quran.Chapters
@@ -160,8 +158,7 @@ module Quran =
         |> Array.filter (snd >> ((<) 0.0))
 
     /// <summary>Finds and scores verses based on text matching.</summary>
-    let filterVersesByText (quran: Quran) (text: string) : array<Verse * float> =
-        filterVersesByTextWithScore quran text
+    let filterVersesByText (quran: Quran) (text: string) : array<Verse * float> = filterVersesByTextWithScore quran text
 
     /// <summary>Fetches the count of chapters.</summary>
     let getChapterCount (quran: Quran) : int = Array.length quran.Chapters

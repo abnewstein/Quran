@@ -7,8 +7,10 @@ open WebSharper
 
 [<JavaScript>]
 type Predicate<'T> = 'T -> bool
+
 [<JavaScript>]
 type Predicate2<'T1, 'T2> = 'T1 -> 'T2 -> bool
+
 [<JavaScript>]
 type Predicate3<'T1, 'T2, 'T3> = 'T1 -> 'T2 -> 'T3 -> bool
 
