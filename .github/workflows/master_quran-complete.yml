@@ -26,6 +26,10 @@ jobs:
         run: dotnet build -c Release --no-restore
       - name: Test
         run: dotnet test --no-build -c Release --verbosity normal
+      - name: List directory contents and working directory
+        run: |
+          pwd
+          dir
       - name: dotnet publish
         run: dotnet publish Quran.Web -c Release -o ${{github.workspace}}\published
       - name: Upload a Build Artifact
@@ -47,7 +51,10 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: website
-
+      - name: List directory contents and working directory
+        run: |
+          pwd
+          dir
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
@@ -55,4 +62,4 @@ jobs:
           app-name: 'quran-complete'
           slot-name: 'production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8800E2FC20C749E99F7620A3611B9060 }}
-          package: .\published\**
+          package: .\published\**\*
