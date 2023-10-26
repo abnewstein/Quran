@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy ASP.Net Core app to Azure Web App - quran-complete
+name: Build and deploy Websharper app to Azure Web App - quran-complete
 
 on:
   push:
@@ -20,7 +20,6 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0.x'
-          include-prerelease: true
       - name: Restore dependencies
         run: dotnet restore
       - name: Build with dotnet
@@ -40,7 +39,7 @@ jobs:
     runs-on: windows-latest
     needs: build
     environment:
-      name: 'Production'
+      name: 'production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
@@ -54,6 +53,6 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'quran-complete'
-          slot-name: 'Production'
+          slot-name: 'production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8800E2FC20C749E99F7620A3611B9060 }}
           package: .
