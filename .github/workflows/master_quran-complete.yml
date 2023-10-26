@@ -28,7 +28,7 @@ jobs:
       - name: Test
         run: dotnet test --no-build -c Release --verbosity normal
       - name: dotnet publish
-        run: dotnet publish QuranWeb -c Release -o ${{github.workspace}}\published
+        run: dotnet publish Quran.Web -c Release -o ${{github.workspace}}\published
       - name: Upload a Build Artifact
         uses: actions/upload-artifact@v3.1.3
         with:
