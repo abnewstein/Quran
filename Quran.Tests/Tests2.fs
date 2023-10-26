@@ -10,8 +10,6 @@ let ``Test - filterVersesByTextWithScore should return verses with non-zero scor
     let query = "Not Equal"
     let result = Quran.filterVersesByTextWithScore quranData[1] query
 
-    printfn "%A" result
-
     Assert.NotEmpty(result)
     Assert.All(result, (fun (_, score) -> Assert.True(score > 0.0)))
 
