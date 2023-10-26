@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="components\**" Link="$(BuildDir)" />
+    <Content Include=".\components\**" Link="$(BuildDir)" />
     <Compile Include="Remoting.fs" />
     <Compile Include="Client.fs" />
     <Compile Include="Site.fs" />

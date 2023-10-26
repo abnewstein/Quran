@@ -55,4 +55,4 @@ jobs:
           app-name: 'quran-complete'
           slot-name: 'production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8800E2FC20C749E99F7620A3611B9060 }}
-          package: .
+          package: .\published\**
