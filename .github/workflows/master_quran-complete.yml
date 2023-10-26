@@ -23,16 +23,16 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build Quran.Web --configuration Release
+        run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish Quran.Web -c Release -o ${{env.DOTNET_ROOT}}\published
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}\published
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}\published
+          path: ${{env.DOTNET_ROOT}}\published\Quran.Web
 
   deploy:
     runs-on: windows-latest
@@ -46,7 +46,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}\published
+          path: ${{env.DOTNET_ROOT}}\published\Quran.Web
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
