@@ -6,8 +6,8 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Tests.fs" />
-    <Compile Include="Tests2.fs" />
+    <Compile Include="QuranStructureTests.fs" />
+    <Compile Include="QuranSearchTests.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <ItemGroup>

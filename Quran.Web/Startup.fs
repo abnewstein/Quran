@@ -24,13 +24,14 @@ let main args =
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             .UseHsts()
         |> ignore
-
+    
     app.UseHttpsRedirection()
-        .UseAuthentication()
+        .UseDefaultFiles()
         .UseStaticFiles()
-        .UseWebSharper(fun ws -> ws.Sitelet(Site.Main) |> ignore)
-    |> ignore
-
+        //Enable if you want to make RPC calls to server
+        //.UseWebSharperRemoting()
+    |> ignore 
+       
     app.Run()
 
     0 // Exit code

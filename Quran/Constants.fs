@@ -4,6 +4,8 @@ open WebSharper
 
 [<JavaScript>]
 module Constants =
+
+    let TOTAL_CHAPTERS = 114
     let VERSE_COUNT_BY_CHAPTER =
         [| 7
            286
@@ -119,15 +121,13 @@ module Constants =
            4
            5
            6 |]
+    let TOTAL_VERSES = Array.sum VERSE_COUNT_BY_CHAPTER
 
     let VerseCountBy chapterNumber =
         VERSE_COUNT_BY_CHAPTER.[chapterNumber - 1]
 
-    let VerseCount = Array.sum VERSE_COUNT_BY_CHAPTER
-    let ChapterCount = Array.length VERSE_COUNT_BY_CHAPTER
-
     let IsValidChapterNumber chapterNumber =
-        chapterNumber > 0 && chapterNumber <= ChapterCount
+        chapterNumber > 0 && chapterNumber <= TOTAL_CHAPTERS
 
     let IsValidVerseNumber chapterNumber verseNumber =
         IsValidChapterNumber chapterNumber
