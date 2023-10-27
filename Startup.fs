@@ -4,7 +4,7 @@ open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.DependencyInjection
 open WebSharper.AspNetCore
-open Quran.Web
+open Quran
 
 [<EntryPoint>]
 let main args =
