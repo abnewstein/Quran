@@ -22,6 +22,23 @@ steps:
   inputs:
     restoreSolution: '$(solution)'
 
+# Add a build step to compile the solution
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+
+# If you have tests, run them
+- script: dotnet test --configuration $(buildConfiguration)
+  displayName: 'dotnet test'
+
+# Publish the application to create a deployable package
+- script: dotnet publish --configuration $(buildConfiguration) --output publish
+  displayName: 'dotnet publish $(buildConfiguration)'
+
+# Publish the package as a pipeline artifact to use in the deployment job
+- publish: publish
+  artifact: drop
+
+# Deploy the application to Azure
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'Azure subscription 1(d83e950d-3f3c-4903-9a64-8d2841c43fef)'
@@ -30,10 +47,5 @@ steps:
     deployToSlotOrASE: true
     resourceGroupName: 'quran'
     slotName: 'production'
-    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+    package: '$(Pipeline.Workspace)/drop'
     deploymentMethod: 'runFromPackage'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
