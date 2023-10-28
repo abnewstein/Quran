@@ -28,7 +28,7 @@ $RECYCLE.BIN/
 # Rider directories
 .idea/
 
-wwwroot/
+wwwroot/Content
 
 # Windows thumbnail cache files
 Thumbs.db
