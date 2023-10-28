@@ -1,9 +1,10 @@
 module QuranStructureTests
 
 open Xunit
+open QuranLib
 open Quran
 
-let quranData: Quran array = Service.getAvailableQuranData ()
+let quranData: array<Quran> = Service.getAvailableQuranData ()
 
 let assertContainsTranslation expectedTranslation qurans =
     Assert.Contains(qurans, fun q -> q.Translation = expectedTranslation)

@@ -1,9 +1,10 @@
 module QuranSearchTests
 
 open Xunit
+open QuranLib
 open Quran
 
-let quranData: Quran array = Service.getAvailableQuranData ()
+let quranData: array<Quran> = Service.getAvailableQuranData ()
 
 [<Fact>]
 let ``Searching verses by text yields non-zero scores for relevant matches`` () =

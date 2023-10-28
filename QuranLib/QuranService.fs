@@ -1,13 +1,10 @@
-namespace Quran
+namespace QuranLib
 
 open WebSharper
 
 module Service = 
     open FileParser
 
-    [<Rpc>]
     let getAvailableQuranData () : array<Quran> =
         getAvailableTranslations () |> Set.map constructQuranFromJson |> Set.toArray
-    
-    [<Rpc>]
-    let QuranData = getAvailableQuranData ()
+        

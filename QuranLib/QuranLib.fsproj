@@ -4,17 +4,17 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Utilities.fs" />
-    <Compile Include="Constants.fs" />
-    <Compile Include="Types.fs" />
-    <Compile Include="FileParser.fs" />
-    <Compile Include="QuranService.fs" />
     <EmbeddedResource Include="data\chapters\ar_original.json" />
     <EmbeddedResource Include="data\verses\ar_original.json" />
     <EmbeddedResource Include="data\chapters\en_transliteration.json" />
     <EmbeddedResource Include="data\chapters\en_sam-gerrans.json" />
     <EmbeddedResource Include="data\verses\en_sam-gerrans.json" />
     <EmbeddedResource Include="data\notes\en_sam-gerrans.json" />
+    <Compile Include="Utilities.fs" />
+    <Compile Include="Constants.fs" />
+    <Compile Include="Types.fs" />
+    <Compile Include="FileParser.fs" />
+    <Compile Include="QuranService.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FSharpPlus" Version="1.4.1" />

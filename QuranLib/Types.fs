@@ -1,4 +1,4 @@
-namespace Quran
+namespace QuranLib
 
 open FSharpPlus
 open WebSharper
@@ -131,38 +131,41 @@ module Translation =
 
 [<JavaScript>]
 module Quran =
+
+    [<JavaScript>]
     let Of (translation: Translation) (chapters: Chapter array) : Quran =
         { Translation = translation
           Chapters = chapters }
 
-    /// <summary>Fetches a chapter by its number.</summary>
+    [<JavaScript>]
     let getChapter (quran: Quran) (chapterNumber: ChapterNumber) : Chapter = quran.Chapters[chapterNumber - 1]
 
-    /// <summary>Fetches a verse given its reference.</summary>
+    [<JavaScript>]
     let getVerse (quran: Quran) (verseRef: VerseRef) : Verse =
         getChapter quran verseRef.ChapterNumber
         |> (fun c -> c.Verses.[verseRef.VerseNumber - 1])
 
-    /// <summary>Fetches all verses for a given chapter number.</summary>
+    [<JavaScript>]
     let getChapterVerses (quran: Quran) (chapterNumber: ChapterNumber) : array<Verse> =
         getChapter quran chapterNumber |> (fun c -> c.Verses)
 
-    /// <summary>Fetches a note given its reference.</summary>
+    [<JavaScript>]
     let getNote (quran: Quran) (noteRef: NoteRef) : Note =
         getVerse quran noteRef.VerseRef |> (fun v -> v.Notes.[noteRef.NoteNumber - 1])
-
+    
+    [<JavaScript>]
     let filterVersesByTextWithScore (quran: Quran) (query: string) : array<Verse * float> =
         quran.Chapters
         |> Array.collect (fun c -> c.Verses)
         |> Array.map (fun v -> (v, calculateMatchingScore (query.ToLower()) (v.Text.ToLower())))
         |> Array.filter (snd >> ((<) 0.0))
 
-    /// <summary>Finds and scores verses based on text matching.</summary>
+    [<JavaScript>]
     let filterVersesByText (quran: Quran) (text: string) : array<Verse * float> = filterVersesByTextWithScore quran text
 
-    /// <summary>Fetches the count of chapters.</summary>
+    [<JavaScript>]
     let getChapterCount (quran: Quran) : int = Array.length quran.Chapters
 
-    /// <summary>Fetches the total count of verses.</summary>
+    [<JavaScript>]
     let getVerseCount (quran: Quran) : int =
         quran.Chapters |> Array.sumBy (fun c -> Array.length c.Verses)

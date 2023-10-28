@@ -1,15 +1,22 @@
-namespace Quran
+namespace QuranWeb
 
 open WebSharper
 open WebSharper.JavaScript
 open WebSharper.UI
 open WebSharper.UI.Client
 open WebSharper.UI.Templating
+open QuranLib
+
+module Server =
+    [<Rpc>]
+    let GetQuranData () =
+        async {
+            let data = Service.getAvailableQuranData()
+            return data
+        }
 
 [<JavaScript>]
 module Client =
-    // The templates are loaded from the DOM, so you just can edit index.html
-    // and refresh your browser, no need to recompile unless you add or remove holes.
     type IndexTemplate = Template<"wwwroot/index.html", ClientLoad.FromDocument>
 
     let People =
@@ -18,10 +25,19 @@ module Client =
             "Paul"
         ]
 
+    let quranData = Var.Create [||]
+
+    let RunOnPageLoad () =
+        async {
+            let! data = Server.GetQuranData()
+            quranData.Value <- data
+        } |> Async.StartImmediate
 
     [<SPAEntryPoint>]
     let Main () =
+        RunOnPageLoad()
         let newName = Var.Create ""
+        Console.Log(quranData)
 
         IndexTemplate.Main()
             .ListContainer(

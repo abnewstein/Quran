@@ -4,7 +4,7 @@ open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.DependencyInjection
 open WebSharper.AspNetCore
-open Quran
+open QuranLib
 
 [<EntryPoint>]
 let main args =
@@ -28,8 +28,7 @@ let main args =
     app.UseHttpsRedirection()
         .UseDefaultFiles()
         .UseStaticFiles()
-        //Enable if you want to make RPC calls to server
-        //.UseWebSharperRemoting()
+        .UseWebSharperRemoting()
     |> ignore 
        
     app.Run()

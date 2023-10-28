@@ -1,4 +1,4 @@
-namespace Quran
+namespace QuranLib
 
 open System.IO
 open System.Reflection
@@ -54,6 +54,7 @@ module Decoder =
         | _ -> failwith "Failed to parse chapters or verses, check the json files"
 
 module FileParser =
+    let RESOURCE_PATH = "QuranLib.data"
     let assembly = Assembly.GetExecutingAssembly()
 
     let readEmbeddedResource resourceName =
@@ -85,8 +86,8 @@ module FileParser =
         getResourceNames () |> Set.filter (fun s -> s.StartsWith(prefix))
 
     let getAvailableTranslations () =
-        let chaptersFiles = getFilesStartingWith "Quran.data.chapters"
-        let versesFiles = getFilesStartingWith "Quran.data.verses"
+        let chaptersFiles = getFilesStartingWith $"{RESOURCE_PATH}.chapters"
+        let versesFiles = getFilesStartingWith $"{RESOURCE_PATH}.verses"
 
         let chTrans, vsTrans =
             parseResourceNames chaptersFiles, parseResourceNames versesFiles
@@ -94,7 +95,7 @@ module FileParser =
         Set.intersect chTrans vsTrans
 
     let getJsonResource (kind: string) (translation: Translation) =
-        readEmbeddedResource $"Quran.data.{kind}.{translation}.json"
+        readEmbeddedResource $"{RESOURCE_PATH}.{kind}.{translation}.json"
 
     let getChaptersJson = getJsonResource "chapters"
     let getVersesJson = getJsonResource "verses"
