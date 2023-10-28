@@ -1,10 +1,11 @@
 namespace QuranWeb
 
 open WebSharper
-open WebSharper.JavaScript
 open WebSharper.UI
+open WebSharper.UI.Html
 open WebSharper.UI.Client
-open WebSharper.UI.Templating
+open WebSharper.UI.Notation
+open WebSharper.JavaScript
 open QuranLib
 
 module Server =
@@ -17,38 +18,53 @@ module Server =
 
 [<JavaScript>]
 module Client =
-    type IndexTemplate = Template<"wwwroot/index.html", ClientLoad.FromDocument>
-
-    let People =
-        ListModel.FromSeq [
-            "John"
-            "Paul"
-        ]
-
     let quranData = Var.Create [||]
 
     let RunOnPageLoad () =
         async {
             let! data = Server.GetQuranData()
-            quranData.Value <- data
+            quranData := data
         } |> Async.StartImmediate
 
+    type EndPoint = Home | About
+
+    let HomePage go =
+        Doc.Concat [
+            h1 [] [text "Home"]
+            Doc.Link "Go to About" [] (fun _ -> go About)
+        ]
+    
+    let AboutPage go =
+        Doc.Concat [
+            h1 [] [text "About"]
+            p [] [text "This is the about page" ]
+            Doc.Link "Go to Home" [] (fun _ -> go Home)
+        ]
+    
+    let routeMap =
+        RouteMap.Create
+        <| function
+            | Home -> []
+            | About -> ["about"]
+        <| function
+            | [] -> Home
+            | ["about"] -> About
+            | _ -> failwith "404"
+
     [<SPAEntryPoint>]
-    let Main () =
+    let Main =
         RunOnPageLoad()
-        let newName = Var.Create ""
         Console.Log(quranData)
 
-        IndexTemplate.Main()
-            .ListContainer(
-                People.View.DocSeqCached(fun (name: string) ->
-                    IndexTemplate.ListItem().Name(name).Doc()
-                )
+        let router = RouteMap.Install routeMap
+        let renderMain v =
+            View.FromVar v
+            |> View.Map (fun pty ->
+                let go = Var.Set v
+                match pty with
+                | Home -> HomePage go
+                | About -> AboutPage go
             )
-            .Name(newName)
-            .Add(fun _ ->
-                People.Add(newName.Value)
-                newName.Value <- ""
-            )
-            .Doc()
-        |> Doc.RunById "main"
+            |> Doc.EmbedView
+
+        Doc.RunById "main" (renderMain router)
