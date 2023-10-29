@@ -4,7 +4,7 @@ open Xunit
 open QuranLib
 open Quran
 
-let quranData: array<Quran> = Service.getAvailableQuranData ()
+let quranData: array<Quran> = Service.AvailableQuranData ()
 
 let assertContainsTranslation expectedTranslation qurans =
     Assert.Contains(qurans, fun q -> q.Translation = expectedTranslation)

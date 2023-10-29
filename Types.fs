@@ -146,7 +146,7 @@ module Quran =
         |> (fun c -> c.Verses.[verseRef.VerseNumber - 1])
 
     [<JavaScript>]
-    let getChapterVerses (quran: Quran) (chapterNumber: ChapterNumber) : array<Verse> =
+    let getVersesByChapter (quran: Quran) (chapterNumber: ChapterNumber) : array<Verse> =
         getChapter quran chapterNumber |> (fun c -> c.Verses)
 
     [<JavaScript>]

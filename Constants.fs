@@ -1,4 +1,4 @@
-﻿namespace QuranLib
+namespace QuranLib
 
 open WebSharper
 

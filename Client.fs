@@ -7,63 +7,44 @@ open WebSharper.UI.Client
 open WebSharper.UI.Notation
 open WebSharper.JavaScript
 open QuranLib
+open QuranService
 
 module Server =
     [<Rpc>]
     let GetQuranData () =
         async {
-            let data = Service.getAvailableQuranData()
+            let data = AvailableQuranData()
             return data
         }
 
 [<JavaScript>]
 module Client =
-    let quranData = Var.Create [||]
+    open Routes
+    open Pages
+    let quranDataVar = Var.Create [||]
 
     let RunOnPageLoad () =
         async {
             let! data = Server.GetQuranData()
-            quranData := data
+            quranDataVar := data
         } |> Async.StartImmediate
-
-    type EndPoint = Home | About
-
-    let HomePage go =
-        Doc.Concat [
-            h1 [] [text "Home"]
-            Doc.Link "Go to About" [] (fun _ -> go About)
-        ]
-    
-    let AboutPage go =
-        Doc.Concat [
-            h1 [] [text "About"]
-            p [] [text "This is the about page" ]
-            Doc.Link "Go to Home" [] (fun _ -> go Home)
-        ]
-    
-    let routeMap =
-        RouteMap.Create
-        <| function
-            | Home -> []
-            | About -> ["about"]
-        <| function
-            | [] -> Home
-            | ["about"] -> About
-            | _ -> failwith "404"
 
     [<SPAEntryPoint>]
     let Main =
         RunOnPageLoad()
-        Console.Log(quranData)
+        Console.Log(quranDataVar)
 
-        let router = RouteMap.Install routeMap
+        let router = RouteMap.Install RouteMap.value
         let renderMain v =
             View.FromVar v
-            |> View.Map (fun pty ->
+            |> View.Map (fun endPoint ->
                 let go = Var.Set v
-                match pty with
-                | Home -> HomePage go
-                | About -> AboutPage go
+                let quranData: array<Quran> = Var.Get quranDataVar
+                let props = go, quranData
+                match endPoint with
+                | Home -> HomePage props
+                | Chapter num -> ChapterPage props num
+                | About -> AboutPage props
             )
             |> Doc.EmbedView
 
