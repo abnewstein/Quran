@@ -54,7 +54,7 @@ module Decoder =
         | _ -> failwith "Failed to parse chapters or verses, check the json files"
 
 module FileParser =
-    let RESOURCE_PATH = "QuranLib.data"
+    let RESOURCE_PATH = "Quran.data"
     let assembly = Assembly.GetExecutingAssembly()
 
     let readEmbeddedResource resourceName =
@@ -104,5 +104,6 @@ module FileParser =
         let chaptersJsonStr = getChaptersJson translation
         let versesJsonStr = getVersesJson translation
 
+        printfn "Constructing Quran for %s" (string translation)
         Decoder.constructQuran chaptersJsonStr versesJsonStr translation
         

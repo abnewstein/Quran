@@ -5,7 +5,6 @@ open FileParser
 
 module QuranService = 
 
-    [<JavaScript>]
     let AvailableQuranData () : array<Quran> =
         getAvailableTranslations () |> Set.map constructQuranFromJson |> Set.toArray
     

@@ -8,7 +8,6 @@ open WebSharper.UI.Notation
 open WebSharper.JavaScript
 open Routes
 open QuranLib
-open Quran
 open QuranService
 
 [<JavaScript>]
