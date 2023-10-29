@@ -10,24 +10,37 @@ open Routes
 open QuranLib
 open QuranService
 
-[<JavaScript>]
-let HomePage props =
-    let go, quranData = props
-    // show a list of chapter names
-    let primaryQuran = quranData |> Array.filter (fun q -> q.Translation.Language = Language "ar") |> Array.head
-    let secondaryQuran = quranData |> Array.filter (fun q -> q.Translation = Translation.Of (Author "sam-gerrans") (Language "en")) |> Array.head
-    let chapterNamesAr = primaryQuran.Chapters |> Array.map (fun c -> c.Name)
-    let chapterNamesEn = secondaryQuran.Chapters |> Array.map (fun c -> c.Name)
-    let chapterNames = Array.zip chapterNamesAr chapterNamesEn
-    let chapterLinks = chapterNames |> Array.map (fun (ar, en) -> Doc.Link ar [] (fun _ -> go (Chapter en)))
-    Doc.Concat [
-        h1 [] [text "Home"]
-        Doc.Concat chapterLinks
-        Doc.Link "Go to About" [] (fun _ -> go About)
-    ]
+
+type Props = (EndPoint -> unit) * array<Quran>
 
 [<JavaScript>]
-let AboutPage props =
+let HomePage (props: Props) =
+    let go, quranData = props
+    // show a list of chapters
+    if quranData.Length > 0 then
+        let quran = quranData.[0]
+        let chapters = quran.Chapters
+        let chapterLinks = chapters |> Array.map (fun c ->
+            let chapterNumber = c.Number
+            let chapterName = c.Name
+            let chapterLink = Doc.Link chapterName [] (fun _ -> go (Chapter (string chapterNumber)))
+            li [] [chapterLink]
+        )
+        Doc.Concat [
+            h1 [] [text "Home"]
+            p [] [text "This is the home page" ]
+            ul [] chapterLinks
+            Doc.Link "Go to About" [] (fun _ -> go About)
+        ]
+    else
+        Doc.Concat [
+            h1 [] [text "Home"]
+            p [] [text "This is the home page" ]
+            Doc.Link "Go to About" [] (fun _ -> go About)
+        ]
+
+[<JavaScript>]
+let AboutPage (props: Props) =
     let go, _ = props
     Doc.Concat [
         h1 [] [text "About"]
@@ -36,7 +49,7 @@ let AboutPage props =
     ]
 
 [<JavaScript>]
-let ChapterPage props num =
+let ChapterPage (props: Props) num =
     let go, quranData = props
     Doc.Concat [
         h1 [] [text "Chapter"]

@@ -26,6 +26,7 @@ module Client =
     let RunOnPageLoad () =
         async {
             let! data = Server.GetQuranData()
+            printfn "Quran data loaded"
             quranDataVar := data
         } |> Async.StartImmediate
 
@@ -39,7 +40,7 @@ module Client =
             View.FromVar v
             |> View.Map (fun endPoint ->
                 let go = Var.Set v
-                let quranData: array<Quran> = Var.Get quranDataVar
+                let quranData = quranDataVar.Value
                 let props = go, quranData
                 match endPoint with
                 | Home -> HomePage props
