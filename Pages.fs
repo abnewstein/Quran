@@ -11,7 +11,7 @@ module Pages =
     open Routes
     open QuranLib
     open Components
-    open ViewOps
+    open QuranOps
 
     [<JavaScript>]
     type Props = (EndPoint -> unit) * View<array<Quran>>
