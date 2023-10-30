@@ -4,7 +4,6 @@ open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Http
 open Microsoft.Extensions.DependencyInjection
 open WebSharper.AspNetCore
-open QuranLib
 
 [<EntryPoint>]
 let main args =
@@ -33,4 +32,4 @@ let main args =
        
     app.Run()
 
-    0 // Exit code
+    0

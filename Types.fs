@@ -70,7 +70,7 @@ type Quran =
 
 [<JavaScript>]
 module VerseRef =
-    let isValid verseRef =
+    let IsValid verseRef =
         IsValidVerseNumber verseRef.ChapterNumber verseRef.VerseNumber
 
     let Of (chapterNumber: int, verseNumber: int) : VerseRef option =
@@ -78,13 +78,13 @@ module VerseRef =
             { ChapterNumber = chapterNumber
               VerseNumber = verseNumber }
 
-        if isValid verseRef then Some(verseRef) else None
+        if IsValid verseRef then Some(verseRef) else None
 
-    let fromString (s: string) : VerseRef option = Option.bind Of (parseTuple2 s)
+    let FromString (s: string) : VerseRef option = Option.bind Of (parseTuple2 s)
 
 [<JavaScript>]
 module NoteRef =
-    let isValid noteRef =
+    let IsValid noteRef =
         IsValidNoteNumber noteRef.VerseRef.ChapterNumber noteRef.VerseRef.VerseNumber noteRef.NoteNumber
 
     let Of (chapterNumber: int, verseNumber: int, noteNumber: int) : NoteRef option =
@@ -95,10 +95,10 @@ module NoteRef =
                     { VerseRef = verseRef
                       NoteNumber = noteNumber }
 
-                if isValid noteRef then Some(noteRef) else None
+                if IsValid noteRef then Some(noteRef) else None
             | None -> None
 
-    let fromString (s: string) : NoteRef option = Option.bind Of (parseTuple3 s)
+    let FromString (s: string) : NoteRef option = Option.bind Of (parseTuple3 s)
 
 [<JavaScript>]
 module Verse =
@@ -138,34 +138,37 @@ module Quran =
           Chapters = chapters }
 
     [<JavaScript>]
-    let getChapter (quran: Quran) (chapterNumber: ChapterNumber) : Chapter = quran.Chapters[chapterNumber - 1]
+    let GetChapter (quran: Quran) (chapterNumber: ChapterNumber) : Chapter = quran.Chapters[chapterNumber - 1]
 
     [<JavaScript>]
-    let getVerse (quran: Quran) (verseRef: VerseRef) : Verse =
-        getChapter quran verseRef.ChapterNumber
+    let GetChapterNames (quran: Quran) : array<string> = quran.Chapters |> Array.map (fun c -> c.Name)
+
+    [<JavaScript>]
+    let GetVerse (quran: Quran) (verseRef: VerseRef) : Verse =
+        GetChapter quran verseRef.ChapterNumber
         |> (fun c -> c.Verses.[verseRef.VerseNumber - 1])
 
     [<JavaScript>]
-    let getVersesByChapter (quran: Quran) (chapterNumber: ChapterNumber) : array<Verse> =
-        getChapter quran chapterNumber |> (fun c -> c.Verses)
+    let GetVersesByChapter (quran: Quran) (chapterNumber: ChapterNumber) : array<Verse> =
+        GetChapter quran chapterNumber |> (fun c -> c.Verses)
 
     [<JavaScript>]
-    let getNote (quran: Quran) (noteRef: NoteRef) : Note =
-        getVerse quran noteRef.VerseRef |> (fun v -> v.Notes.[noteRef.NoteNumber - 1])
+    let GetNote (quran: Quran) (noteRef: NoteRef) : Note =
+        GetVerse quran noteRef.VerseRef |> (fun v -> v.Notes.[noteRef.NoteNumber - 1])
     
     [<JavaScript>]
-    let filterVersesByTextWithScore (quran: Quran) (query: string) : array<Verse * float> =
+    let FilterVersesByTextWithScore (quran: Quran) (query: string) : array<Verse * float> =
         quran.Chapters
         |> Array.collect (fun c -> c.Verses)
         |> Array.map (fun v -> (v, calculateMatchingScore (query.ToLower()) (v.Text.ToLower())))
         |> Array.filter (snd >> ((<) 0.0))
 
     [<JavaScript>]
-    let filterVersesByText (quran: Quran) (text: string) : array<Verse * float> = filterVersesByTextWithScore quran text
+    let FilterVersesByText (quran: Quran) (text: string) : array<Verse * float> = FilterVersesByTextWithScore quran text
 
     [<JavaScript>]
-    let getChapterCount (quran: Quran) : int = Array.length quran.Chapters
+    let GetChapterCount (quran: Quran) : int = Array.length quran.Chapters
 
     [<JavaScript>]
-    let getVerseCount (quran: Quran) : int =
+    let GetVerseCount (quran: Quran) : int =
         quran.Chapters |> Array.sumBy (fun c -> Array.length c.Verses)

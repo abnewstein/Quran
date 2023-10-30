@@ -57,53 +57,55 @@ module FileParser =
     let RESOURCE_PATH = "Quran.data"
     let assembly = Assembly.GetExecutingAssembly()
 
-    let readEmbeddedResource resourceName =
+    let ReadEmbeddedResource resourceName =
         printfn "Reading embedded resource: %s" resourceName
         use stream = assembly.GetManifestResourceStream(resourceName)
         use reader = new StreamReader(stream)
         reader.ReadToEnd()
 
-    let getResourceNames () =
+    let GetResourceNames () =
         assembly.GetManifestResourceNames()
         |> Array.map Path.GetFileNameWithoutExtension
         |> Set.ofArray
 
-    let parseFileName (fileName: string) =
+    let ParseFileName (fileName: string) =
         fileName.Split('_')
         |> Array.toList
         |> function
             | language :: author :: [] -> Some(Translation.Of (Author author) (Language language))
             | _ -> None
 
-    let parseResourceNames (resourceNames: string Set) =
+    let ParseResourceNames (resourceNames: string Set) =
         resourceNames
         |> Set.map (fun s -> s.Split('.') |> Array.last)
-        |> Set.map parseFileName
+        |> Set.map ParseFileName
         |> Set.filter Option.isSome
         |> Set.map Option.get
 
-    let getFilesStartingWith (prefix: string) =
-        getResourceNames () |> Set.filter (fun s -> s.StartsWith(prefix))
+    let GetFilesStartingWith (prefix: string) =
+        GetResourceNames () |> Set.filter (fun s -> s.StartsWith(prefix))
 
-    let getAvailableTranslations () =
-        let chaptersFiles = getFilesStartingWith $"{RESOURCE_PATH}.chapters"
-        let versesFiles = getFilesStartingWith $"{RESOURCE_PATH}.verses"
+    let GetAvailableTranslations () =
+        let chaptersFiles = GetFilesStartingWith $"{RESOURCE_PATH}.chapters"
+        let versesFiles = GetFilesStartingWith $"{RESOURCE_PATH}.verses"
 
         let chTrans, vsTrans =
-            parseResourceNames chaptersFiles, parseResourceNames versesFiles
+            ParseResourceNames chaptersFiles, ParseResourceNames versesFiles
 
         Set.intersect chTrans vsTrans
 
-    let getJsonResource (kind: string) (translation: Translation) =
-        readEmbeddedResource $"{RESOURCE_PATH}.{kind}.{translation}.json"
+    let GetJsonResource (kind: string) (translation: Translation) =
+        ReadEmbeddedResource $"{RESOURCE_PATH}.{kind}.{translation}.json"
 
-    let getChaptersJson = getJsonResource "chapters"
-    let getVersesJson = getJsonResource "verses"
-    let getNotesJson = getJsonResource "notes"
-    let constructQuranFromJson (translation: Translation) : Quran =
-        let chaptersJsonStr = getChaptersJson translation
-        let versesJsonStr = getVersesJson translation
+    let GetChaptersJson = GetJsonResource "chapters"
+    let GetVersesJson = GetJsonResource "verses"
+    let GetNotesJson = GetJsonResource "notes"
+    let ConstructQuranFromJson (translation: Translation) : Quran =
+        let chaptersJsonStr = GetChaptersJson translation
+        let versesJsonStr = GetVersesJson translation
 
         printfn "Constructing Quran for %s" (string translation)
         Decoder.constructQuran chaptersJsonStr versesJsonStr translation
-        
+    
+    let AvailableQuranData () : array<Quran> =
+        GetAvailableTranslations () |> Set.map ConstructQuranFromJson |> Set.toArray

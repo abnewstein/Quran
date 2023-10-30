@@ -1,11 +1,7 @@
-module Routes
+namespace Routes
 
 open WebSharper
 open WebSharper.UI
-open WebSharper.UI.Html
-open WebSharper.UI.Client
-open WebSharper.UI.Notation
-open WebSharper.JavaScript
 
 [<JavaScript>]
 type EndPoint = 

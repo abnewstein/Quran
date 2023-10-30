@@ -7,41 +7,36 @@ open WebSharper.UI.Client
 open WebSharper.UI.Notation
 open WebSharper.JavaScript
 open QuranLib
-open QuranService
 
 module Server =
+
+    let quranData = FileParser.AvailableQuranData()
+
     [<Rpc>]
-    let GetQuranData () =
+    let GetQuranDataAsync () =
         async {
-            let data = AvailableQuranData()
-            return data
+            return quranData
         }
 
 [<JavaScript>]
 module Client =
     open Routes
     open Pages
-    let quranDataVar = Var.Create [||]
-
-    let RunOnPageLoad () =
-        async {
-            let! data = Server.GetQuranData()
-            printfn "Quran data loaded"
-            quranDataVar := data
-        } |> Async.StartImmediate
 
     [<SPAEntryPoint>]
-    let Main =
-        RunOnPageLoad()
-        Console.Log(quranDataVar)
+    let Main () =
+
+        let QuranData = View.ConstAsync(Server.GetQuranDataAsync())
 
         let router = RouteMap.Install RouteMap.value
-        let renderMain v =
-            View.FromVar v
+
+        let renderMain endPointVar =
+            endPointVar
+            |> View.FromVar
             |> View.Map (fun endPoint ->
-                let go = Var.Set v
-                let quranData = quranDataVar.Value
-                let props = go, quranData
+                let navigate = Var.Set endPointVar
+
+                let props = navigate, QuranData
                 match endPoint with
                 | Home -> HomePage props
                 | Chapter num -> ChapterPage props num
@@ -49,4 +44,6 @@ module Client =
             )
             |> Doc.EmbedView
 
-        Doc.RunById "main" (renderMain router)
+        
+        renderMain router
+        |> Doc.RunById "main"
