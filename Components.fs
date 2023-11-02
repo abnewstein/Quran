@@ -29,18 +29,12 @@ module QuranOps =
 
 [<JavaScript>]
 module Components =
-    let ChapterListDoc (quranData: array<Quran>) =
-        let names1 = QuranOps.ChapterNames1 quranData
-        let names2 = QuranOps.ChapterNames2 quranData
-        let pairedNames = 
-            match names1, names2 with
-            | Some names1, Some names2 -> Array.zip names1 names2
-            | _ -> [||]
-        div [] [
-            ul [] [
-                pairedNames 
-                |> Array.map (fun (name1, name2) ->
-                    li [] [text $"{name1} - {name2}"])
-                    |> Doc.Concat
-            ]
-        ]
+
+    type NameList = string array
+    type NameListView = View<NameList option>
+    let quranData = State.quranDataVar
+    let ChapterListDoc =
+        let names1: NameListView = quranData |> View.Map QuranOps.ChapterNames1
+        let names2: NameListView = quranData |> View.Map QuranOps.ChapterNames2
+        
+        Doc.Empty

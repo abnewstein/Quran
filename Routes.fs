@@ -1,4 +1,4 @@
-namespace Routes
+namespace QuranWeb
 
 open WebSharper
 open WebSharper.UI
@@ -10,7 +10,7 @@ type EndPoint =
     | About
 
 [<JavaScript>]
-module RouteMap =
+module Routes =
     let value =
         RouteMap.Create
         <| function

@@ -1,48 +1,35 @@
 namespace QuranWeb
 
+open WebSharper
+open WebSharper.UI
+open WebSharper.UI.Html
+open WebSharper.UI.Client
+open WebSharper.UI.Notation
+open WebSharper.JavaScript
+open QuranWeb
+open QuranLib
+
+[<JavaScript>]
 module Pages =
+    let go = State.SetClientUrlVar
 
-    open WebSharper
-    open WebSharper.UI
-    open WebSharper.UI.Html
-    open WebSharper.UI.Client
-    open WebSharper.UI.Notation
-    open WebSharper.JavaScript
-    open Routes
-    open QuranLib
-    open Components
-    open QuranOps
-
-    [<JavaScript>]
-    type Props = (EndPoint -> unit) * View<array<Quran>>
-
-    [<JavaScript>]
-    let HomePage (props: Props) =
-        let go, quranData = props
-        let chapterList = 
-            quranData 
-            |> View.Map ChapterListDoc
-            |> Doc.EmbedView
-
+    let HomePage =
+        let chapterList = Components.ChapterListDoc
         Doc.Concat [
             h1 [] [text "Home"]
+            p [] [text "This is the home page" ]
             Doc.Link "Go to About" [] (fun _ -> go About)
             chapterList
-        ]    
-
+        ]
         
-    [<JavaScript>]
-    let AboutPage (props: Props) =
-        let go, _ = props
+    let AboutPage =
         Doc.Concat [
             h1 [] [text "About"]
             p [] [text "This is the about page" ]
             Doc.Link "Go to Home" [] (fun _ -> go Home)
         ]
 
-    [<JavaScript>]
-    let ChapterPage (props: Props) num =
-        let go, quranData = props
+    let ChapterPage num =
         Doc.Concat [
             h1 [] [text "Chapter"]
             p [] [text num]
