@@ -44,10 +44,7 @@ module Components =
                     let ChapterNames: ChapterNameList =
                         match ChapterNames1, ChapterNames2 with
                         | Some c1, Some c2 ->
-                            Array.zip c1 c2
-                            |> Array.map (fun ((name1), (name2)) ->
-                                (name1, name2)
-                            )
+                            Array.zip c1 c2                            
                         | _ -> [||]
                     let chapterList =
                         ChapterNames
