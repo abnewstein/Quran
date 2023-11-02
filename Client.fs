@@ -29,5 +29,5 @@ module Client =
             )
             |> Doc.EmbedView
 
-        renderMain State.routerVar
+        renderMain State.RouterVar
         |> Doc.RunById "main"

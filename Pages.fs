@@ -11,10 +11,10 @@ open QuranLib
 
 [<JavaScript>]
 module Pages =
-    let go = State.SetClientUrlVar
+    let go = State.SetRouterVar
 
     let HomePage =
-        let chapterList = Components.ChapterListDoc
+        let chapterList = Components.Reader.ChapterListDoc
         Doc.Concat [
             h1 [] [text "Home"]
             p [] [text "This is the home page" ]

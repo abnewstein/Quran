@@ -9,8 +9,8 @@ open QuranServer
 [<JavaScript>]
 module State =
 
-    let quranDataVar = View.ConstAsync(Server.GetQuranDataAsync())
-    let routerVar: Var<EndPoint> = RouteMap.Install Routes.value
+    let QuranDataVar = View.ConstAsync(Server.GetQuranDataAsync())
+    let RouterVar: Var<EndPoint> = RouteMap.Install Routes.value
 
-    let SetClientUrlVar (newUrl: EndPoint) =
-        routerVar.Set newUrl
+    let SetRouterVar (newUrl: EndPoint) =
+        RouterVar.Set newUrl

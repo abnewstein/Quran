@@ -30,11 +30,34 @@ module QuranOps =
 [<JavaScript>]
 module Components =
 
-    type NameList = string array
-    type NameListView = View<NameList option>
-    let quranData = State.quranDataVar
-    let ChapterListDoc =
-        let names1: NameListView = quranData |> View.Map QuranOps.ChapterNames1
-        let names2: NameListView = quranData |> View.Map QuranOps.ChapterNames2
-        
-        Doc.Empty
+    let quranData = State.QuranDataVar
+
+    module Reader =
+        type ChapterNameList = array<(string * string)>
+        let ChapterListDoc =
+            quranData
+            |> View.Map (fun quranData ->
+                match quranData with
+                | quranData when quranData.Length > 0 ->
+                    let ChapterNames1 = QuranOps.ChapterNames1 quranData
+                    let ChapterNames2 = QuranOps.ChapterNames2 quranData
+                    let ChapterNames: ChapterNameList =
+                        match ChapterNames1, ChapterNames2 with
+                        | Some c1, Some c2 ->
+                            Array.zip c1 c2
+                            |> Array.map (fun ((name1), (name2)) ->
+                                (name1, name2)
+                            )
+                        | _ -> [||]
+                    let chapterList =
+                        ChapterNames
+                        |> Array.map (fun (num, name) ->
+                            li [] [Doc.Link name [] (fun _ -> State.SetRouterVar (Chapter num))]
+                        )
+                        |> Doc.Concat
+                    
+                    ul [] [chapterList]
+                | _ -> p [] [text "No quran data"]
+            )
+            |> Doc.EmbedView
+            
