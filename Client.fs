@@ -7,43 +7,27 @@ open WebSharper.UI.Client
 open WebSharper.UI.Notation
 open WebSharper.JavaScript
 open QuranLib
-
-module Server =
-
-    let quranData = FileParser.AvailableQuranData()
-
-    [<Rpc>]
-    let GetQuranDataAsync () =
-        async {
-            return quranData
-        }
+open QuranServer
 
 [<JavaScript>]
 module Client =
-    open Routes
+    open QuranWeb
     open Pages
 
     [<SPAEntryPoint>]
     let Main () =
 
-        let QuranData = View.ConstAsync(Server.GetQuranDataAsync())
-
-        let router = RouteMap.Install RouteMap.value
-
         let renderMain endPointVar =
             endPointVar
             |> View.FromVar
             |> View.Map (fun endPoint ->
-                let navigate = Var.Set endPointVar
-
-                let props = navigate, QuranData
+                
                 match endPoint with
-                | Home -> HomePage props
-                | Chapter num -> ChapterPage props num
-                | About -> AboutPage props
+                | Home -> HomePage
+                | Chapter num -> ChapterPage num
+                | About -> AboutPage
             )
             |> Doc.EmbedView
 
-        
-        renderMain router
+        renderMain State.RouterVar
         |> Doc.RunById "main"

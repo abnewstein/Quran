@@ -9,7 +9,7 @@ open WebSharper.JavaScript
 open QuranLib
 
 [<JavaScript>]
-module ViewOps =
+module QuranOps =
     let PrimaryQuran (quranData: array<Quran>) =
         match quranData.Length with
         | 0 -> None
@@ -29,18 +29,35 @@ module ViewOps =
 
 [<JavaScript>]
 module Components =
-    let ChapterListDoc (quranData: array<Quran>) =
-        let names1 = ViewOps.ChapterNames1 quranData
-        let names2 = ViewOps.ChapterNames2 quranData
-        let pairedNames = 
-            match names1, names2 with
-            | Some names1, Some names2 -> Array.zip names1 names2
-            | _ -> [||]
-        div [] [
-            ul [] [
-                pairedNames 
-                |> Array.map (fun (name1, name2) ->
-                    li [] [text $"{name1} - {name2}"])
-                    |> Doc.Concat
-            ]
-        ]
+
+    let quranData = State.QuranDataVar
+
+    module Reader =
+        type ChapterNameList = array<(string * string)>
+        let ChapterListDoc =
+            quranData
+            |> View.Map (fun quranData ->
+                match quranData with
+                | quranData when quranData.Length > 0 ->
+                    let ChapterNames1 = QuranOps.ChapterNames1 quranData
+                    let ChapterNames2 = QuranOps.ChapterNames2 quranData
+                    let ChapterNames: ChapterNameList =
+                        match ChapterNames1, ChapterNames2 with
+                        | Some c1, Some c2 ->
+                            Array.zip c1 c2
+                            |> Array.map (fun ((name1), (name2)) ->
+                                (name1, name2)
+                            )
+                        | _ -> [||]
+                    let chapterList =
+                        ChapterNames
+                        |> Array.map (fun (num, name) ->
+                            li [] [Doc.Link name [] (fun _ -> State.SetRouterVar (Chapter num))]
+                        )
+                        |> Doc.Concat
+                    
+                    ul [] [chapterList]
+                | _ -> p [] [text "No quran data"]
+            )
+            |> Doc.EmbedView
+            
