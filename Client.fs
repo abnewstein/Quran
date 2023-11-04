@@ -11,7 +11,6 @@ open QuranServer
 
 [<JavaScript>]
 module Client =
-    open QuranWeb
     open Pages
 
     [<SPAEntryPoint>]

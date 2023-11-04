@@ -4,7 +4,7 @@ open Xunit
 open QuranLib
 open Quran
 
-let quranData: array<Quran> = Service.AvailableQuranData ()
+let QuranData: array<Quran> = Service.AvailableQuranData ()
 
 let assertContainsTranslation expectedTranslation qurans =
     Assert.Contains(qurans, fun q -> q.Translation = expectedTranslation)
@@ -28,21 +28,21 @@ let ``Quran comprises the expected total number of verses`` () =
 [<InlineData("sam-gerrans", "en")>]
 let ``Available translations include expected authors and languages`` (author: string, language: string) =
     let expectedTranslation = Translation.Of (Author author) (Language language)
-    assertContainsTranslation expectedTranslation quranData
+    assertContainsTranslation expectedTranslation QuranData
 
 [<Theory>]
 [<InlineData("transliteration", "en")>]
 let ``Unavailable translations are excluded from the dataset`` (author: string, language: string) =
     let expectedTranslation = Translation.Of (Author author) (Language language)
-    assertNotContainsTranslation expectedTranslation quranData
+    assertNotContainsTranslation expectedTranslation QuranData
 
 [<Fact>]
 let ``Each Quran translation contains the canonical number of chapters`` () =
-    assertChapterCount Constants.TOTAL_CHAPTERS quranData
+    assertChapterCount Constants.TOTAL_CHAPTERS QuranData
 
 [<Fact>]
 let ``Each chapter in every Quran translation has the expected number of verses`` () =
-    quranData
+    QuranData
     |> Array.iter (fun quran ->
         quran.Chapters
         |> Array.iteri (fun i chapter ->
@@ -51,7 +51,7 @@ let ``Each chapter in every Quran translation has the expected number of verses`
 
 [<Fact>]
 let ``Total verse count in each Quran translation matches the canonical count`` () =
-    quranData
+    QuranData
     |> Array.iter (fun quran ->
         let totalVerseCount = quran.Chapters |> Array.sumBy (fun ch -> ch.Verses.Length)
         Assert.Equal(Constants.TOTAL_VERSES, totalVerseCount))

@@ -5,10 +5,10 @@ open WebSharper
 
 module Server =
 
-    let quranData = FileParser.AvailableQuranData()
+    let QuranData = FileParser.AvailableQuranData()
 
     [<Rpc>]
     let GetQuranDataAsync () =
         async {
-            return quranData
+            return QuranData
         }

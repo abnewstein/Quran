@@ -10,51 +10,63 @@ open QuranLib
 
 [<JavaScript>]
 module QuranOps =
-    let PrimaryQuran (quranData: array<Quran>) =
-        match quranData.Length with
-        | 0 -> None
-        | _ -> Some quranData[0]
-    let SecondaryQuran (quranData: array<Quran>) =
-        match quranData.Length with
-        | 0 -> None
-        | _ -> Some quranData[1]
-    let ChapterNames1 (quranData: array<Quran>) =
+    let primaryOrSecondaryQuran index (quranData: array<Quran>) =
+        if quranData.Length > index then Some quranData.[index] else None
+    
+    let chapterNamesAtIndex index (quranData: array<Quran>) =
         quranData 
-        |> PrimaryQuran 
-        |> Option.map Quran.GetChapterNames
-    let ChapterNames2 (quranData: array<Quran>) =
-        quranData 
-        |> SecondaryQuran 
+        |> primaryOrSecondaryQuran index
         |> Option.map Quran.GetChapterNames
 
 [<JavaScript>]
 module Components =
 
-    let quranData = State.QuranDataVar
+    let quranDataVar = State.QuranDataVar
 
     module Reader =
         type ChapterNameList = array<(string * string)>
+        let GoToChapter chapterNumber = fun _ -> State.SetRouterVar (Chapter $"{chapterNumber}")
+        
         let ChapterListDoc =
-            quranData
-            |> View.Map (fun quranData ->
-                match quranData with
-                | quranData when quranData.Length > 0 ->
-                    let ChapterNames1 = QuranOps.ChapterNames1 quranData
-                    let ChapterNames2 = QuranOps.ChapterNames2 quranData
-                    let ChapterNames: ChapterNameList =
-                        match ChapterNames1, ChapterNames2 with
-                        | Some c1, Some c2 ->
-                            Array.zip c1 c2                            
-                        | _ -> [||]
-                    let chapterList =
-                        ChapterNames
-                        |> Array.map (fun (num, name) ->
-                            li [] [Doc.Link name [] (fun _ -> State.SetRouterVar (Chapter num))]
-                        )
-                        |> Doc.Concat
-                    
-                    ul [] [chapterList]
-                | _ -> p [] [text "No quran data"]
+            let renderChapterNames chapterNames =
+                chapterNames
+                |> Array.mapi (fun i (c1, c2) ->
+                    li [] [
+                        Doc.Link c1 [] (GoToChapter (i + 1))
+                        text " "
+                        Doc.Link c2 [] (GoToChapter (i + 1))
+                    ]
+                )
+                |> Doc.Concat
+
+            quranDataVar
+            |> View.Map (function
+                | [| primary; secondary |] ->
+                    let NamePairs = Array.zip (Quran.GetChapterNames primary) (Quran.GetChapterNames secondary)
+                    ul [] [renderChapterNames NamePairs]
+                | _ -> p [] [text "Loading..."]
             )
             |> Doc.EmbedView
+        
+        let VerseListDoc chapterNumber =
+            let renderVerses (verses: array<Verse * Verse>) =
+                verses
+                |> Array.mapi (fun i (v1, v2) ->
+                    li [] [
+                        p [] [text v1.Text]
+                        p [] [text v2.Text]
+                    ]
+                )
+                |> Doc.Concat
             
+            quranDataVar
+            |> View.Map (function
+                | [| primary; secondary |] ->
+                    let primaryVerses = Quran.GetVersesByChapter primary chapterNumber
+                    let secondaryVerses = Quran.GetVersesByChapter secondary chapterNumber
+                    let verses = Array.zip primaryVerses secondaryVerses
+                    ul [] [renderVerses verses]
+                    
+                | _ -> p [] [text "Loading..."]
+            )
+            |> Doc.EmbedView

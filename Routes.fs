@@ -11,7 +11,7 @@ type EndPoint =
 
 [<JavaScript>]
 module Routes =
-    let value =
+    let Value =
         RouteMap.Create
         <| function
             | Home -> []
