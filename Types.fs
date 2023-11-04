@@ -153,8 +153,8 @@ module Quran =
         GetChapter quran chapterNumber |> (fun c -> c.Verses)
 
     [<JavaScript>]
-    let GetNote (quran: Quran) (noteRef: NoteRef) : Note =
-        GetVerse quran noteRef.VerseRef |> (fun v -> v.Notes.[noteRef.NoteNumber - 1])
+    let GetNotes (quran: Quran) (noteRef: NoteRef) : array<Note> =
+        GetVerse quran noteRef.VerseRef |> (fun v -> v.Notes)
     
     [<JavaScript>]
     let FilterVersesByTextWithScore (quran: Quran) (query: string) : array<Verse * float> =
