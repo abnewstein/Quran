@@ -21,10 +21,7 @@ module QuranOps =
 [<JavaScript>]
 module Components =
 
-    let quranData = State.QuranDataVar
-
     module Reader =
-        type ChapterNameList = array<(string * string)>
         let GoToChapter chapterNumber = fun _ -> State.SetRouterVar (Chapter $"{chapterNumber}")
         
         let ChapterListDoc =
@@ -39,7 +36,7 @@ module Components =
                 )
                 |> Doc.Concat
 
-            quranData
+            State.QuranData
             |> View.Map (function
                 | [| primary; secondary |] ->
                     let NamePairs = Array.zip (Quran.GetChapterNames primary) (Quran.GetChapterNames secondary)
@@ -59,7 +56,7 @@ module Components =
                 )
                 |> Doc.Concat
             
-            quranData
+            State.QuranData
             |> View.Map (function
                 | [| primary; secondary |] ->
                     let primaryVerses = Quran.GetVersesByChapter primary chapterNumber
