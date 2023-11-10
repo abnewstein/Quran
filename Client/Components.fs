@@ -14,14 +14,14 @@ module QuranOps =
         if quranData.Length > index then Some quranData.[index] else None
     
     let chapterNamesAtIndex index (quranData: array<Quran>) =
-        quranData 
+        quranData
         |> primaryOrSecondaryQuran index
         |> Option.map Quran.GetChapterNames
 
 [<JavaScript>]
 module Components =
 
-    let quranDataVar = State.QuranDataVar
+    let quranData = State.QuranDataVar
 
     module Reader =
         type ChapterNameList = array<(string * string)>
@@ -39,7 +39,7 @@ module Components =
                 )
                 |> Doc.Concat
 
-            quranDataVar
+            quranData
             |> View.Map (function
                 | [| primary; secondary |] ->
                     let NamePairs = Array.zip (Quran.GetChapterNames primary) (Quran.GetChapterNames secondary)
@@ -59,7 +59,7 @@ module Components =
                 )
                 |> Doc.Concat
             
-            quranDataVar
+            quranData
             |> View.Map (function
                 | [| primary; secondary |] ->
                     let primaryVerses = Quran.GetVersesByChapter primary chapterNumber
