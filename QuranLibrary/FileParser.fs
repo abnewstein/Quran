@@ -1,4 +1,4 @@
-namespace QuranLib
+namespace QuranLibrary
 
 open System.IO
 open System.Reflection

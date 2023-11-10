@@ -1,4 +1,4 @@
-namespace Utilities
+namespace QuranLibrary
 
 open System
 open FSharpPlus

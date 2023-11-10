@@ -1,4 +1,4 @@
-namespace QuranWeb
+namespace QuranClient
 
 open WebSharper
 open WebSharper.UI

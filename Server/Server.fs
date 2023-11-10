@@ -1,9 +1,9 @@
 namespace QuranServer
 
-open QuranLib
+open QuranLibrary
 open WebSharper
 
-module Server =
+module ServerFunctions =
 
     let QuranData = FileParser.AvailableQuranData()
 

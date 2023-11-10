@@ -1,4 +1,4 @@
-namespace QuranWeb
+namespace QuranClient
 
 open WebSharper
 open WebSharper.UI
@@ -6,7 +6,7 @@ open WebSharper.UI.Html
 open WebSharper.UI.Client
 open WebSharper.UI.Notation
 open WebSharper.JavaScript
-open QuranLib
+open QuranLibrary
 open QuranServer
 
 [<JavaScript>]

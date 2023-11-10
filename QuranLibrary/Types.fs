@@ -1,10 +1,9 @@
-namespace QuranLib
+namespace QuranLibrary
 
-open FSharpPlus
 open WebSharper
 open Constants
-open Utilities.TextSearch
-open Utilities.Functions
+open TextSearch
+open Functions
 
 [<JavaScript>]
 type ChapterNumber = int
