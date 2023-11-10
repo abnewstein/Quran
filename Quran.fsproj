@@ -14,9 +14,10 @@
     <Compile Include="QuranLibrary\Types.fs" />
     <Compile Include="QuranLibrary\FileParser.fs" />
     <Compile Include="Server\Server.fs" />
+    <Compile Include="Client\Utilities.fs" />
     <Compile Include="Client\Routes.fs" />
     <Compile Include="Client\State.fs" />
-    <Compile Include="Client\Components.fs" />
+    <Compile Include="Client\Components\Reader.fs" />
     <Compile Include="Client\Pages.fs" />
     <Compile Include="Client\Client.fs" />
     <Compile Include="Startup.fs" />

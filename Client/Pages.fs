@@ -13,7 +13,7 @@ module Pages =
     let Go = State.SetRouterVar
 
     let HomePage =
-        let chapterList = Components.Reader.ChapterListDoc
+        let chapterList = Reader.ChapterListDoc
         Doc.Concat [
             h1 [] [text "Home"]
             Doc.Link "About" [] (fun _ -> Go About)
@@ -31,7 +31,7 @@ module Pages =
         Doc.Concat [
             h1 [] [text "Chapter"]
             p [] [text num]
-            Components.Reader.VerseListDoc (int num)
+            Reader.VerseListDoc (int num)
             Doc.Link "Home" [] (fun _ -> Go Home)
             Doc.Link "About" [] (fun _ -> Go About)
         ]
