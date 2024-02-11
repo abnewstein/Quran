@@ -1,4 +1,4 @@
-
+**Note: This project is currently incomplete and under development.**
 # Quran
 
 ## Description
