@@ -1,62 +1,53 @@
-**Note: This project is currently incomplete and under development.**
-# Quran
-
-## Description
-
-`Quran` is an F# class library designed to provide strongly-typed models and utility functions for handling Quranic data, such as verses and chapters. This library aims to offer a solid foundation for building Quranic applications with enhanced type safety and functionality.
+# Quran Web Application with WebSharper and .NET
 
 ## Features
 
-- Strongly-typed models for Quranic Chapters and Verses.
-- Utility functions to validate chapter and verse numbers.
+- Browse chapters and verses in Arabic and English
+
+## Prerequisites
+
+- .NET 5.0 or later
 
 ## Installation
 
-### Prerequisites
-
-- .NET SDK 5.0 or higher
-
-### Steps
-
-1. **Clone the repository**:
-
+1. Clone the repository:
     ```bash
-    git clone https://github.com/abnewstein/Quran.git
+    git clone https://github.com/abnewstein/quran-fsharp.git
     ```
 
-2. **Navigate to the project folder**:
-
+2. Navigate to the project directory:
     ```bash
-    cd Quran
+    cd quran-fsharp
     ```
 
-3. **Restore dependencies**:
-
+3. Restore the packages:
     ```bash
     dotnet restore
     ```
 
+4. Build the project:
+    ```bash
+    dotnet build
+    ```
+
+5. Run the application:
+    ```bash
+    dotnet run
+    ```
+
 ## Usage
 
-To use the library in your F# project, add it as a reference:
+Open your web browser and navigate to `http://localhost:5000` (or the port specified) to access the application.
 
-```bash
-dotnet add reference /path/to/Quran/Quran.fsproj
-```
+## Contributing
 
-Then, in your F# files, you can use the library like so:
+Contributions are welcome! Please read the contributing guidelines and the code of conduct before making contributions or opening an issue.
 
-```fsharp
-open Quran
+## License
 
-// Your code here
-```
 
-## Running Tests
 
-We follow Test-Driven Development (TDD). To run the tests:
+## Acknowledgments
 
-```bash
-dotnet test
-```
-
+- Thanks to WebSharper for providing a functional framework for web development
+- Quranic data sourced from [data-source-link]
